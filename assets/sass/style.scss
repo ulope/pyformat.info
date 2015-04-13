@@ -23,6 +23,13 @@ pre {
     font-family: 'Source Code Pro', monospace;
     background: $grey;
     padding: 5px 10px;
+
+    i {
+        display: inline-block;
+        margin-right: 1px;
+        padding: 0 4px;
+        background: darken($grey, 10);
+    }
 }
 
 section {

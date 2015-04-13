@@ -43,9 +43,14 @@ def generate_css(base_folder, target_folder):
     return file_mapping
 
 
+def split_letters(value):
+    return ''.join(['<i>{}</i>'.format(letter) for letter in value])
+
+
 def generate_html(content, output_file):
     env = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
     env.filters['markdown'] = markdown.markdown
+    env.filters['lettering'] = split_letters
     tmpl = env.get_template('index.html')
     style_mapping = generate_css('assets/sass', 'assets/css')
     with open(output_file, 'w', encoding='utf-8') as fp:
