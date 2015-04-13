@@ -1,0 +1,111 @@
+$pageWidth: 700px;
+$grey: #EFEFEF;
+$blue: #2b5b84;
+$yellow: #ffd343;
+$base: #333;
+$radius: 8px;
+
+@import "normalize";
+@import url('http://fonts.googleapis.com/css?family=Source+Sans+Pro|Source+Code+Pro');
+
+html {
+    font-family: 'Source Sans Pro', Arial, sans-serif;
+    font-size: 62.5%;
+}
+
+body {
+    font-size: 1.5rem;
+    line-height: 2.2rem;
+    color: $base;
+}
+
+pre {
+    font-family: 'Source Code Pro', monospace;
+    background: $grey;
+    padding: 5px 10px;
+}
+
+section {
+    margin-top: 50px;
+}
+
+a {
+    color: $blue;
+}
+
+i {
+    font-style: normal;
+}
+
+h3 {
+    font-size: 1.6rem;
+}
+
+footer {
+    font-size: 1.2rem;
+    text-align: center;
+    color: lighten($base, 30);
+    margin-bottom: 50px;
+}
+
+#details section {
+    .setup, .code, .output {
+        margin-left: 3rem;
+    }
+}
+
+
+#page {
+    width: $pageWidth;
+    margin: auto;
+}
+
+#logo {
+    line-height: 3rem;
+    font-size: 2.0rem;
+    font-weight: normal;
+    color: #333;
+    margin: 30px 0 0px 0;
+
+    b {
+        color: $blue;
+        font-size: 4.2rem;
+        line-height: 5rem;
+        display: inline-block;
+        margin-right: 1rem;
+        background: $blue;
+        color: #FFF;
+        padding: 5px 15px;
+        border-radius: $radius;
+
+        i {
+            color: $yellow;
+        }
+    }
+
+    i {
+        font-weight: bold;
+        color: $blue;
+    }
+}
+
+#teaser {
+    background: lighten($blue, 60);
+    padding: 0.2rem 1rem;
+    color: $blue;
+    margin-bottom: 25px;
+    border-radius: $radius;
+    margin-top: 20px;
+}
+
+.new, .old, .output {
+    display: flex;
+    flex-direction: row;
+    h3 {
+        min-width: 75px;
+        margin-right: 10px;
+    }
+    pre {
+        flex-grow: 1;
+    }
+}
