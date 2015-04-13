@@ -2,20 +2,24 @@ def test_simple():
     """
     Simple formatting
 
-    ...
+    Simple positional formatting is probably the most common use-case. Use it
+    if the order of your arguments is not likely to change and you only have
+    very few elements you want to concatinate.
+
+    Since the elements are not represented by something as descriptive as a
+    name it is easy to confuse their positions in the format if you try to
+    concatinate too many elements.
     """
-    old_result = '%s' % ('hodor', )
-    new_result = '{}'.format('hodor')
+    old_result = '%s %s' % ('one', 'two', )
+    new_result = '{} {}'.format('one', 'two')
 
     assert old_result == new_result
-    assert old_result == 'hodor'  # output
+    assert old_result == 'one two'  # output
 
 
 def test_string_pad_align_right():
     """
     Pad with spaces and align right
-
-    ...
     """
     old_result = '%10s' % ('test', )
     new_result = '{:>10}'.format('test')
@@ -27,8 +31,6 @@ def test_string_pad_align_right():
 def test_string_pad_align_left():
     """
     Pad with spaces and align left
-
-    ...
     """
     old_result = '%-10s' % ('test', )
     new_result = '{:10}'.format('test')
