@@ -28,6 +28,9 @@
                     <section id="{{ example.name }}">
                         <h2>{{ example.title }}</h2>
                         <div class="description">{{ example.details|markdown }}</div>
+                        {% if not example.old %}
+                            <p class="notice">This operation is not available with old-style formatting.</p>
+                        {% endif %}
                         {% if example.setup %}
                         <div class="setup">
                             <h3>Setup</h3>
@@ -35,10 +38,12 @@
                         </div>
                         {% endif %}
                         <div class="code">
-                            <div class="old">
-                                <h3>Old</h3>
-                                <pre><code>{{ example.old}}</code></pre>
-                            </div>
+                            {% if example.old %}
+                                <div class="old">
+                                    <h3>Old</h3>
+                                    <pre><code>{{ example.old}}</code></pre>
+                                </div>
+                            {% endif %}
                             <div class="new">
                                 <h3>New</h3>
                                 <pre><code>{{ example.new}}</code></pre>

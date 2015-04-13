@@ -1,6 +1,7 @@
 $pageWidth: 700px;
 $grey: #EFEFEF;
 $blue: #2b5b84;
+$red: #b55863;
 $yellow: #ffd343;
 $base: #333;
 $radius: 8px;
@@ -104,6 +105,14 @@ footer {
     margin-bottom: 25px;
     border-radius: $radius;
     margin-top: 20px;
+}
+
+.notice {
+    background: lighten($red, 40);
+    padding: 0.2rem 1rem;
+    color: $red;
+    margin-bottom: 10px;
+    border-radius: $radius;
 }
 
 .new, .old, .output {
