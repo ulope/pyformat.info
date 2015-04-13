@@ -3,6 +3,7 @@ import hashlib
 import importlib
 import inspect
 import jinja2
+import markdown
 import sass
 
 from collections import namedtuple
@@ -15,7 +16,7 @@ CONTENT_MODULE = "tests.test_content"
 
 OUTPUT_RE = rex("""s/^.*?assert .*? == ['"](.*)['"].*?# output$/\\1/""")
 
-Example = namedtuple("Example", ('name', 'doc', 'setup', 'old', 'new', 'output'))
+Example = namedtuple("Example", ('name', 'title', 'details', 'setup', 'old', 'new', 'output'))
 
 
 def compile_sass(source_path, target_path_pattern):
@@ -39,10 +40,20 @@ def generate_css(base_folder, target_folder):
 
 def generate_html(content, output_file):
     env = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
+    env.filters['markdown'] = markdown.markdown
     tmpl = env.get_template('index.html')
     style_mapping = generate_css('assets/sass', 'assets/css')
     with open(output_file, 'w', encoding='utf-8') as fp:
         fp.write(tmpl.render(examples=list(content), styles=style_mapping))
+
+
+def parse_docstring(docstring):
+    lines = docstring.split('\n')
+    if len(lines) < 1:
+        return (None, None)
+    if len(lines) < 3:
+        return (lines[0], None)
+    return (lines[0], '\n'.join(lines[2:]))
 
 
 def parse_function(function):
@@ -80,9 +91,13 @@ def parse_function(function):
         if seen_doc_end and not seen_setup_end:
             setup.append(line)
 
+    docstr = inspect.getdoc(function)
+    title, details = parse_docstring(docstr)
+
     return Example(
         function.__code__.co_name,
-        inspect.getdoc(function),
+        title,
+        details,
         dedent("".join(setup)).strip(),
         old,
         new,
@@ -115,7 +130,8 @@ def extract(verbose):
         cnt += 1
         if verbose:
             print("Function: {}".format(example.name))
-            print("    Doc:\n{}".format(indent(example.doc, " " * 8)))
+            print("    Title:\n{}".format(indent(example.title, " " * 8)))
+            print("    Details:\n{}".format(indent(example.details, " " * 8)))
             print("    Example:")
             print("        Setup:\n{}".format(indent(example.setup, " " * 14)))
             print("        Old: {}".format(example.old))

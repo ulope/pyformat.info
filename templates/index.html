@@ -1,6 +1,6 @@
 <html lang="en">
     <head>
-        <title>PyFormat: Usage patterns for Python's string formats</title>
+        <title>PyFormat: Using % and .format for great good!</title>
         <meta charset="utf-8">
         <link href="assets/css/{{ styles["style.scss"] }}" rel="stylesheet">
     </head>
@@ -18,15 +18,15 @@
                     <h2>Table of Contents:</h2>
                     <ol>
                         {% for example in examples %}
-                        <li><a href="#{{ example.name }}">{{ example.name }}</a></li>
+                        <li><a href="#{{ example.name }}">{{ example.title }}</a></li>
                         {% endfor %}
                     </ol>
                 </section>
                 <section id="details">
                     {% for example in examples %}
                     <section id="{{ example.name }}">
-                        <h2>Working with dictionary elements</h2>
-                        <div class="description">{{ example.doc }}</div>
+                        <h2>{{ example.title }}</h2>
+                        <div class="description">{{ example.details|markdown }}</div>
                         {% if example.setup %}
                         <div class="setup">
                             <h3>Setup</h3>
