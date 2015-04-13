@@ -100,7 +100,7 @@ def parse_function(function):
     title, details = parse_docstring(docstr)
 
     return Example(
-        function.__code__.co_name,
+        function.__code__.co_name.replace("test_", ""),
         title,
         details,
         dedent("".join(setup)).strip(),
