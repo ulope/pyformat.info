@@ -14,7 +14,7 @@ from rex import rex
 
 CONTENT_MODULE = "tests.test_content"
 
-OUTPUT_RE = rex("""s/^.*?assert .*? == ['"](.*)['"].*?# output$/\\1/""")
+OUTPUT_RE = rex(r"""s/^.*?assert .*? == ['"](.*)['"].*?# output$\n/\1/""")
 
 Example = namedtuple("Example", ('name', 'title', 'details', 'setup', 'old', 'new', 'output'))
 
