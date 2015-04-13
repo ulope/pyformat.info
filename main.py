@@ -1,15 +1,14 @@
-import click
 import hashlib
 import importlib
 import inspect
-import jinja2
-import markdown
-import sass
-
+from textwrap import dedent, indent
 from collections import namedtuple
 from pathlib import Path
+
+import jinja2
+import sass
+import click
 from rex import rex
-from textwrap import dedent, indent
 
 
 CONTENT_MODULE = "tests.test_content"
@@ -30,9 +29,14 @@ def compile_sass(source_path, target_path_pattern):
 
 def generate_css(base_folder, target_folder):
     file_mapping = {}
+    target_folder = Path(target_folder)
+    try:
+        target_folder.mkdir(parents=True)
+    except FileExistsError:
+        pass
     for file_ in Path(base_folder).glob('*.scss'):
         if not file_.name.startswith('_'):
-            target_path = Path(target_folder) / (file_.stem + '.{}.css')
+            target_path = target_folder / (file_.stem + '.{}.css')
             target_path = compile_sass(file_, target_path)
             file_mapping[file_.name] = target_path.name
     return file_mapping
