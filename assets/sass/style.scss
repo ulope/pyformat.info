@@ -109,3 +109,31 @@ footer {
         flex-grow: 1;
     }
 }
+
+@media screen and (max-width: 700px) {
+    #logo {
+        b {
+            display: block;
+        }
+    }
+
+    pre {
+        font-size: 1.2rem;
+    }
+
+    #page {
+        width: auto;
+        padding: 0 5px;
+        max-width: 100%;
+    }
+
+    .new, .old, .output {
+        display: block;
+    }
+
+    #details section {
+        .setup, .code, .output {
+            margin-left: 0;
+        }
+    }
+}
