@@ -1,3 +1,5 @@
 pyformat_site.egg-info
 .tox
 *.css
+index.html
+.coverage
