@@ -1,0 +1,59 @@
+<html lang="en">
+    <head>
+        <title>PyFormat: Usage patterns for Python's string formats</title>
+        <meta charset="utf-8">
+        <link href="assets/css/{{ styles["style.scss"] }}" rel="stylesheet">
+    </head>
+    <body>
+        <div id="page">
+            <header>
+                <h1 id="logo"><b><i>Py</i>Format</b> Using <i>%</i> and <i>.format</i> for great good!</h1>
+            </header>
+            <div id="main">
+                <section id="teaser">
+                    <p>Python has had awesome string formatters for many years now but the documentation here was far too technical. With this site we try to show you the most common use-cases covered by the old and the new string formatting API with pratical examples.</p>
+                    <p>If you want to contribute more examples, feel free to create a pull-request on Github!</p>
+                </section>
+                <section id="toc">
+                    <h2>Table of Contents:</h2>
+                    <ol>
+                        {% for example in examples %}
+                        <li><a href="#{{ example.name }}">{{ example.name }}</a></li>
+                        {% endfor %}
+                    </ol>
+                </section>
+                <section id="details">
+                    {% for example in examples %}
+                    <section id="{{ example.name }}">
+                        <h2>Working with dictionary elements</h2>
+                        <div class="description">{{ example.doc }}</div>
+                        {% if example.setup %}
+                        <div class="setup">
+                            <h3>Setup</h3>
+                            <pre><code>{{ example.setup }}</code></pre>
+                        </div>
+                        {% endif %}
+                        <div class="code">
+                            <div class="old">
+                                <h3>Old</h3>
+                                <pre><code>{{ example.old}}</code></pre>
+                            </div>
+                            <div class="new">
+                                <h3>New</h3>
+                                <pre><code>{{ example.new}}</code></pre>
+                            </div>
+                        </div>
+                        <div class="output">
+                            <h3>Output</h3>
+                            <pre><code>{{ example.output}}</code></pre>
+                        </div>
+                    <section>
+                    {% endfor %}
+                <section>
+            </div>
+            <footer>
+                (cc-nc-sa) Ulrich Petri &amp; Horst Gutmann
+            </footer>
+        </div>
+    </body>
+</html>

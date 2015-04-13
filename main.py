@@ -1,17 +1,48 @@
-from collections import namedtuple
+import click
+import hashlib
 import importlib
 import inspect
-from textwrap import dedent, indent
-import click
+import jinja2
+import sass
+
+from collections import namedtuple
+from pathlib import Path
 from rex import rex
+from textwrap import dedent, indent
 
 
 CONTENT_MODULE = "tests.test_content"
 
 OUTPUT_RE = rex("""s/^.*?assert .*? == ['"](.*)['"].*?# output$/\\1/""")
 
-
 Example = namedtuple("Example", ('name', 'doc', 'setup', 'old', 'new', 'output'))
+
+
+def compile_sass(source_path, target_path_pattern):
+    output = sass.compile(filename=str(source_path))
+    hash = hashlib.sha512(output.encode('utf-8')).hexdigest()[:8]
+    target_path = str(target_path_pattern).format(hash)
+    with open(target_path, 'w') as fp:
+        fp.write(output)
+    return Path(target_path)
+
+
+def generate_css(base_folder, target_folder):
+    file_mapping = {}
+    for file_ in Path(base_folder).glob('*.scss'):
+        if not file_.name.startswith('_'):
+            target_path = Path(target_folder) / (file_.stem + '.{}.css')
+            target_path = compile_sass(file_, target_path)
+            file_mapping[file_.name] = target_path.name
+    return file_mapping
+
+
+def generate_html(content, output_file):
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
+    tmpl = env.get_template('index.html')
+    style_mapping = generate_css('assets/sass', 'assets/css')
+    with open(output_file, 'w', encoding='utf-8') as fp:
+        fp.write(tmpl.render(examples=list(content), styles=style_mapping))
 
 
 def parse_function(function):
@@ -68,6 +99,12 @@ def get_content():
 @click.group()
 def main():
     pass
+
+
+@main.command()
+@click.option('-o', '--output', default='index.html', help="Path to the output HTML file")
+def generate(output):
+    generate_html(get_content(), output)
 
 
 @main.command()
