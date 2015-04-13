@@ -107,3 +107,21 @@ def test_dictionary_access():
 
     assert old_result == new_result
     assert old_result == 'First Last'  # output
+
+
+def test_nested_dictionary_access():
+    """
+    Nested Dictionary Access
+
+    ...
+    """
+    data = {
+        'person': {
+            'first_name': 'First',
+            'last_name': 'Last',
+        }
+    }
+
+    new_result = '{data[person][first_name]} {data[person][last_name]}'.format(data=data)
+
+    assert new_result == 'First Last'  # output
