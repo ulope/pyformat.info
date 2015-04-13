@@ -111,7 +111,10 @@ def parse_function(function):
 
 def get_content():
     content_module = importlib.import_module(CONTENT_MODULE)
-    for name, function in inspect.getmembers(content_module, inspect.isfunction):
+    for name, function in sorted(
+        inspect.getmembers(content_module, inspect.isfunction),
+        key=lambda m: m[1].__code__.co_firstlineno
+    ):
         yield parse_function(function)
 
 
