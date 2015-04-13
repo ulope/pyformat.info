@@ -8,6 +8,7 @@ from pathlib import Path
 import jinja2
 import sass
 import click
+import markdown
 from rex import rex
 
 
