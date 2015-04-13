@@ -1,3 +1,4 @@
 click==4.0
 jinja2==2.7.3
 python-rex==0.4
+libsass==0.7.0
