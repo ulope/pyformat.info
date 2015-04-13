@@ -27,9 +27,11 @@
                     {% for example in examples %}
                     <section id="{{ example.name }}">
                         <h2>{{ example.title }}</h2>
-                        <div class="description">{{ example.details|markdown }}</div>
-                        {% if not example.old %}
-                            <p class="notice">This operation is not available with old-style formatting.</p>
+                        {% if example.details %}
+                            <div class="description">{{ example.details|markdown }}</div>
+                            {% if not example.old %}
+                                <p class="notice">This operation is not available with old-style formatting.</p>
+                            {% endif %}
                         {% endif %}
                         {% if example.setup %}
                         <div class="setup">
@@ -58,7 +60,7 @@
                 <section>
             </div>
             <footer>
-                (cc-nc-sa) Ulrich Petri &amp; Horst Gutmann
+                <p><a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</p>
             </footer>
         </div>
     </body>
