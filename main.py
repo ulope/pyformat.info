@@ -90,7 +90,7 @@ def parse_function(function):
             continue
 
         if seen_setup_end and not output and "# output" in line:
-            output = OUTPUT_RE(line).strip()
+            output = OUTPUT_RE(line)
             break
 
         if seen_doc_end and not seen_setup_end:
