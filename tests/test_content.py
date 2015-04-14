@@ -212,36 +212,92 @@ def test_number_sign_4():
     assert new_result == '-  23'  # output
 
 
-def test_dictionary_access():
+def test_named_placeholders():
     """
-    # Dictionary Access
+    # Named placeholders
+
+    Both formatting styles support named placeholders.
     """
     data = {
         'first': 'Hodor',
-        'last': 'Hodor',
+        'last': 'Hodor!',
     }
 
     old_result = '%(first)s %(last)s' % data
     new_result = '{first} {last}'.format(**data)
 
     assert old_result == new_result
-    assert old_result == 'Hodor Hodor'  # output
+    assert old_result == 'Hodor Hodor!'  # output
 
 
-def test_nested_dictionary_access():
+def test_named_placeholders_2():
     """
-    # Nested Dictionary Access
+    `.format()` also accepts keyword arguments.
     """
-    data = {
-        'person': {
-            'first_name': 'First',
-            'last_name': 'Last',
-        }
+
+    new_result = '{first} {last}'.format(first="Hodor", last="Hodor!")
+
+    assert new_result == 'Hodor Hodor!'  # output
+
+
+def getitem_and_getattr():
+    """
+    # Getitem and Getattr
+
+    New style formatting allows even greater flexibility in accessing nested
+    data structures.
+
+    It supports accessing containers that support `__getitem__` like for
+    example dictionaries and lists:
+
+    """
+    person = {
+        'first': 'Jean-Luc',
+        'last': 'Picard',
     }
 
-    new_result = '{data[person][first_name]} {data[person][last_name]}'.format(data=data)
+    new_result = '{p[first]} {p[last]}'.format(p=person)
 
-    assert new_result == 'First Last'  # output
+    assert new_result == 'Jean-Luc Picard'  # output
+
+
+def getitem_and_getattr_2():
+    data = [4, 8, 15, 16, 23, 42]
+
+    new_result = '{d[4]} {d[5]}'.format(d=data)
+
+    assert new_result == '23 42'  # output
+
+
+def getitem_and_getattr_3():
+    """
+    As well as accessing attributes on objects via `getattr()`:
+    """
+
+    class Plant(object):
+        type = "tree"
+
+    new_result = '{p.type}'.format(p=Plant())
+
+    assert new_result == 'tree'  # output
+
+
+def getitem_and_getattr_4():
+    """
+    Both type of access can be freely mixed and arbitrarily nested:
+    """
+
+    class Plant(object):
+        type = "tree"
+        kinds = [{
+            'name': "oak",
+        }, {
+            'name': 'maple'
+        }]
+
+    new_result = '{p.type}: {p.kinds[0].name}'.format(p=Plant())
+
+    assert new_result == 'tree: oak'  # output
 
 
 def test_datetime():
@@ -249,8 +305,11 @@ def test_datetime():
     # Datetime values
 
     Additionally new style formatting allows objects to control their own
-    rendering. This for example allows datetime objects to be formatted inline.
+    rendering via the `__format__()` magic method. This for example allows
+    datetime objects to be formatted inline.
     """
+
+    from datetime import datetime
 
     new_result = '{:%Y-%m-%d %H:%M}'.format(datetime(2001, 2, 3, 4, 5))
 
