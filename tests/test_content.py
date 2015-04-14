@@ -1,14 +1,14 @@
 def test_simple():
     """
-    # Simple formatting
+    # Basic formatting
 
     Simple positional formatting is probably the most common use-case. Use it
     if the order of your arguments is not likely to change and you only have
     very few elements you want to concatenate.
 
     Since the elements are not represented by something as descriptive as a
-    name it is easy to confuse their positions in the format if you try to
-    concatenate too many elements.
+    name this simple style should only be used to format a relatively small
+    number of elements.
     """
     old_result = '%s %s' % ('one', 'two', )
     new_result = '{} {}'.format('one', 'two')
@@ -17,9 +17,40 @@ def test_simple():
     assert old_result == 'one two'  # output
 
 
-def test_string_pad_align_right():
+def test_simple_2():
+    old_result = '%d %d' % (1, 2)
+    new_result = '{} {}'.format(1, 2)
+
+    assert old_result == new_result
+    assert new_result == "1 2"  # output
+
+
+def test_simple_3():
     """
-    # Pad with spaces and align right
+    With new style formatting it is possible (and in Python 2.6 even mandatory)
+    to give placeholders an explicit positional index.
+
+    This allows for re-arranging the order of display without changing the
+    arguments.
+    """
+    new_result = '{1} {0}'.format('one', 'two')
+
+    assert new_result == 'two one'  # output
+
+
+def test_string_pad_align():
+    """
+    # Padding and aligning
+
+    By default values are formatted to take up only as many characters as
+    needed to represent the content. It is however also possible to define that
+    a value should be padded by a specific amount.
+
+    Unfortunately the default alignment differs between old and new style
+    formatting. Old style defaults to right aligned while for new style it's
+    left.
+
+    Align right:
     """
     old_result = '%10s' % ('test', )
     new_result = '{:>10}'.format('test')
@@ -28,10 +59,11 @@ def test_string_pad_align_right():
     assert old_result == '      test'  # output
 
 
-def test_string_pad_align_left():
+def test_string_pad_align_2():
     """
-    # Pad with spaces and align left
+    Align left:
     """
+
     old_result = '%-10s' % ('test', )
     new_result = '{:10}'.format('test')
 
@@ -39,9 +71,35 @@ def test_string_pad_align_left():
     assert old_result == 'test      '  # output
 
 
+def test_string_pad_align_3():
+    """
+    Again new style formatting surpasses the old variant by providing more
+    control over how values are padded and aligned.
+
+    You are able to choose the padding character:
+    """
+
+    new_result = '{:*<10}'.format('test')
+
+    assert new_result == 'test******'  # output
+
+
+def test_string_pad_align_4():
+    """
+    And also center align values:
+    """
+
+    new_result = '{:^10}'.format('test')
+
+    assert new_result == '   test   '  # output
+
+
 def test_string_truncating():
     """
-    # Truncate overly long strings
+    # Truncating long values
+
+    Inverse to padding it is also possible to truncate overly long values
+    to a specific number of characters.
     """
     old_result = '%5.5s' % ('xylophone', )
     new_result = '{:5.5}'.format('xylophone')
