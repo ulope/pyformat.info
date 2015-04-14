@@ -1,3 +1,6 @@
+from datetime import datetime
+
+
 def test_simple():
     """
     # Basic formatting
@@ -40,7 +43,7 @@ def test_simple_3():
 
 def test_string_pad_align():
     """
-    # Padding and aligning
+    # Padding and aligning strings
 
     By default values are formatted to take up only as many characters as
     needed to represent the content. It is however also possible to define that
@@ -96,7 +99,7 @@ def test_string_pad_align_4():
 
 def test_string_truncating():
     """
-    # Truncating long values
+    # Truncating long strings
 
     Inverse to padding it is also possible to truncate overly long values
     to a specific number of characters.
@@ -108,9 +111,13 @@ def test_string_truncating():
     assert old_result == 'xylop'  # output
 
 
-def test_integer():
+def test_number():
     """
-    # Format interger
+    # Numbers
+
+    Of course it is also possible to format numbers.
+
+    Integers:
     """
     old_result = '%d' % (42, )
     new_result = '{:d}'.format(42)
@@ -119,20 +126,22 @@ def test_integer():
     assert old_result == '42'  # output
 
 
-def test_integer_padding_zero():
+def test_number_2():
     """
-    # Format interger with zero padding
+    Floats:
     """
-    old_result = '%04d' % (42, )
-    new_result = '{:04d}'.format(42)
+    old_result = '%f' % (3.141592653589793, )
+    new_result = '{:f}'.format(3.141592653589793)
 
     assert old_result == new_result
-    assert old_result == '0042'  # output
+    assert old_result == '3.141593'  # output
 
 
-def test_integer_padding_space():
+def test_number_padding():
     """
-    # Format interger with space padding
+    # Padding numbers
+
+    Similar to strings numbers can also be constrained to a specific width.
     """
     old_result = '%4d' % (42, )
     new_result = '{:4d}'.format(42)
@@ -141,20 +150,82 @@ def test_integer_padding_space():
     assert old_result == '  42'  # output
 
 
+def test_number_padding_2():
+    old_result = '%2.2f' % (3.141592653589793, )
+    new_result = '{:2.2f}'.format(3.141592653589793)
+
+    assert old_result == new_result
+    assert old_result == '3.14'  # output
+
+
+def test_number_padding_3():
+    old_result = '%04d' % (42, )
+    new_result = '{:04d}'.format(42)
+
+    assert old_result == new_result
+    assert old_result == '0042'  # output
+
+
+def test_number_sign():
+    """
+    # Signed numbers
+
+    By default only negative numbers are prefixed with a sign. This can be
+    changed of course.
+    """
+
+    old_result = '%+d' % (42, )
+    new_result = '{:+d}'.format(42)
+
+    assert old_result == new_result
+    assert old_result == '+42'  # output
+
+
+def test_number_sign_2():
+    """
+    Use a space character to indicate that negative numbers should be prefixed
+    with a minus symbol and a leading space should be used for positive ones.
+    """
+    old_result = '% d' % (-23, )
+    new_result = '{: d}'.format(-23)
+
+    assert old_result == new_result
+    assert old_result == '-23'  # output
+
+
+def test_number_sign_3():
+    old_result = '% d' % (42, )
+    new_result = '{: d}'.format(42)
+
+    assert old_result == new_result
+    assert old_result == ' 42'  # output
+
+
+def test_number_sign_4():
+    """
+    New style formatting is also able to control the position of the sign
+    symbol relative to the padding.
+    """
+
+    new_result = '{:=5d}'.format(-23)
+
+    assert new_result == '-  23'  # output
+
+
 def test_dictionary_access():
     """
     # Dictionary Access
     """
     data = {
-        'first_name': 'First',
-        'last_name': 'Last',
+        'first': 'Hodor',
+        'last': 'Hodor',
     }
 
-    old_result = '%(first_name)s %(last_name)s' % data
-    new_result = '{first_name} {last_name}'.format(**data)
+    old_result = '%(first)s %(last)s' % data
+    new_result = '{first} {last}'.format(**data)
 
     assert old_result == new_result
-    assert old_result == 'First Last'  # output
+    assert old_result == 'Hodor Hodor'  # output
 
 
 def test_nested_dictionary_access():
@@ -171,3 +242,16 @@ def test_nested_dictionary_access():
     new_result = '{data[person][first_name]} {data[person][last_name]}'.format(data=data)
 
     assert new_result == 'First Last'  # output
+
+
+def test_datetime():
+    """
+    # Datetime values
+
+    Additionally new style formatting allows objects to control their own
+    rendering. This for example allows datetime objects to be formatted inline.
+    """
+
+    new_result = '{:%Y-%m-%d %H:%M}'.format(datetime(2001, 2, 3, 4, 5))
+
+    assert new_result == '2001-02-03 04:05'  # output
