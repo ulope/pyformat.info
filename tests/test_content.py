@@ -1,6 +1,6 @@
 def test_simple():
     """
-    Simple formatting
+    # Simple formatting
 
     Simple positional formatting is probably the most common use-case. Use it
     if the order of your arguments is not likely to change and you only have
@@ -19,7 +19,7 @@ def test_simple():
 
 def test_string_pad_align_right():
     """
-    Pad with spaces and align right
+    # Pad with spaces and align right
     """
     old_result = '%10s' % ('test', )
     new_result = '{:>10}'.format('test')
@@ -30,7 +30,7 @@ def test_string_pad_align_right():
 
 def test_string_pad_align_left():
     """
-    Pad with spaces and align left
+    # Pad with spaces and align left
     """
     old_result = '%-10s' % ('test', )
     new_result = '{:10}'.format('test')
@@ -41,9 +41,7 @@ def test_string_pad_align_left():
 
 def test_string_truncating():
     """
-    Truncate overly long strings
-
-    ...
+    # Truncate overly long strings
     """
     old_result = '%5.5s' % ('xylophone', )
     new_result = '{:5.5}'.format('xylophone')
@@ -54,9 +52,7 @@ def test_string_truncating():
 
 def test_integer():
     """
-    Format interger
-
-    ...
+    # Format interger
     """
     old_result = '%d' % (42, )
     new_result = '{:d}'.format(42)
@@ -67,9 +63,7 @@ def test_integer():
 
 def test_integer_padding_zero():
     """
-    Format interger with zero padding
-
-    ...
+    # Format interger with zero padding
     """
     old_result = '%04d' % (42, )
     new_result = '{:04d}'.format(42)
@@ -80,9 +74,7 @@ def test_integer_padding_zero():
 
 def test_integer_padding_space():
     """
-    Format interger with space padding
-
-    ...
+    # Format interger with space padding
     """
     old_result = '%4d' % (42, )
     new_result = '{:4d}'.format(42)
@@ -93,9 +85,7 @@ def test_integer_padding_space():
 
 def test_dictionary_access():
     """
-    Dictionary Access
-
-    ...
+    # Dictionary Access
     """
     data = {
         'first_name': 'First',
@@ -111,9 +101,7 @@ def test_dictionary_access():
 
 def test_nested_dictionary_access():
     """
-    Nested Dictionary Access
-
-    ...
+    # Nested Dictionary Access
     """
     data = {
         'person': {

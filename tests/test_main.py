@@ -1,10 +1,19 @@
-import sys
-
-import pytest
-
-from main import get_content
+from main import parse_docstring
 
 
-@pytest.mark.xfail(sys.version_info < (3, 3), reason="Because 2.7")
-def test_collect():
-    assert len(list(get_content())) == 8
+def test_parse_docstring_with_title_and_description():
+    assert parse_docstring('# title\n\ndescription') == ('title', 'description')
+
+
+def test_parse_docstring_with_title_only():
+    assert parse_docstring('# title') == ('title', None)
+    assert parse_docstring('# title\n\n') == ('title', None)
+
+
+def test_parse_docstring_without_title():
+    """
+    If a docstring contains multiple lines but the first one doesn't start
+    with a #, the whole docstring is considered the description.
+    """
+    assert parse_docstring('not the title\nnot the title') == (None, 'not the title\nnot the title')
+    assert parse_docstring('not the title') == (None, 'not the title')

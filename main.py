@@ -61,9 +61,10 @@ def parse_docstring(docstring):
     lines = docstring.split('\n')
     if len(lines) < 1:
         return (None, None)
-    if len(lines) < 3:
-        return (lines[0], None)
-    return (lines[0], '\n'.join(lines[2:]))
+    if lines[0].startswith('# '):
+        return (lines[0][2:], '\n'.join(lines[2:]) or None)
+    else:
+        return (None, '\n'.join(lines))
 
 
 def parse_function(function):
