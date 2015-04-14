@@ -58,13 +58,15 @@ def generate_html(content, output_file):
 
 
 def parse_docstring(docstring):
-    lines = docstring.split('\n')
+    if not docstring:
+        return (None, None)
+    lines = docstring.rstrip().split('\n')
     if len(lines) < 1:
         return (None, None)
     if lines[0].startswith('# '):
         return (lines[0][2:], '\n'.join(lines[2:]) or None)
     else:
-        return (None, '\n'.join(lines))
+        return (None, '\n'.join(lines) or None)
 
 
 def parse_function(function):

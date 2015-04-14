@@ -3,3 +3,4 @@ pyformat_site.egg-info
 *.css
 index.html
 .coverage
+htmlcov

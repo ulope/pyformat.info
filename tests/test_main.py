@@ -1,6 +1,12 @@
 from main import parse_docstring
 
 
+def test_parse_docstring_without_docstring():
+    assert parse_docstring('') == (None, None)
+    assert parse_docstring('  ') == (None, None)
+    assert parse_docstring(None) == (None, None)
+
+
 def test_parse_docstring_with_title_and_description():
     assert parse_docstring('# title\n\ndescription') == ('title', 'description')
 
