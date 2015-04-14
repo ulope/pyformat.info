@@ -28,7 +28,9 @@
                 <section id="details">
                     {% for example in examples %}
                     <section id="{{ example.name }}" {% if not example.title %}class="continuation"{% endif %}>
-                        <h2>{{ example.title }}</h2>
+                        {% if example.title %}
+                            <h2>{{ example.title }}</h2>
+                        {% endif %}
                         {% if example.details %}
                             <div class="description">{{ example.details|markdown }}</div>
                             {% if not example.old %}
