@@ -35,6 +35,10 @@ pre {
 
 section {
     margin-top: 50px;
+
+    &.continuation {
+        margin-top: 5px;
+    }
 }
 
 a {

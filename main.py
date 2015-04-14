@@ -98,7 +98,7 @@ def parse_function(function):
             output = OUTPUT_RE(line)
             break
 
-        if seen_doc_end and not seen_setup_end:
+        if (seen_doc_end or not seen_doc_start) and not seen_setup_end:
             setup.append(line)
 
     docstr = inspect.getdoc(function)
@@ -143,11 +143,15 @@ def extract(verbose):
         cnt += 1
         if verbose:
             print("Function: {}".format(example.name))
-            print("    Title:\n{}".format(indent(example.title, " " * 8)))
-            print("    Details:\n{}".format(indent(example.details, " " * 8)))
+            if example.title:
+                print("    Title:\n{}".format(indent(example.title, " " * 8)))
+            if example.details:
+                print("    Details:\n{}".format(indent(example.details, " " * 8)))
             print("    Example:")
-            print("        Setup:\n{}".format(indent(example.setup, " " * 14)))
-            print("        Old: {}".format(example.old))
+            if example.setup:
+                print("        Setup:\n{}".format(indent(example.setup, " " * 14)))
+            if example.old:
+                print("        Old: {}".format(example.old))
             print("        New: {}".format(example.new))
             print("        Output: {}".format(example.output))
             print()
