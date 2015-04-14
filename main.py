@@ -78,7 +78,10 @@ def parse_function(function):
     new = ""
     output = ""
     lines, _ = inspect.getsourcelines(function)
-    for line in lines:
+    for i, line in enumerate(lines):
+        if i == 0 and "def" in line:
+            continue
+
         if not seen_doc_start and '''"""''' in line:
             seen_doc_start = True
             continue
