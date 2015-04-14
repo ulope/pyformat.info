@@ -12,7 +12,7 @@ import markdown
 from rex import rex
 
 
-CONTENT_MODULE = "tests.test_content"
+CONTENT_MODULE_PATH = "tests.test_content"
 
 OUTPUT_RE = rex(r"""s/^.*?assert .*? == ['"](.*)['"].*?# output$\n/\1/""")
 
@@ -119,7 +119,7 @@ def parse_function(function):
 
 
 def get_content():
-    content_module = importlib.import_module(CONTENT_MODULE)
+    content_module = importlib.import_module(CONTENT_MODULE_PATH)
     for name, function in sorted(
         inspect.getmembers(content_module, inspect.isfunction),
         key=lambda m: m[1].__code__.co_firstlineno
