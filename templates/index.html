@@ -43,19 +43,19 @@
                         {% if example.setup %}
                         <div class="setup">
                             <h3>Setup</h3>
-                            <pre><code>{{ example.setup }}</code></pre>
+                            {{ example.setup|highlight|safe }}
                         </div>
                         {% endif %}
                         <div class="code">
                             {% if example.old %}
                                 <div class="old">
                                     <h3>Old</h3>
-                                    <pre><code>{{ example.old}}</code></pre>
+                                    {{ example.old|highlight|safe }}
                                 </div>
                             {% endif %}
                             <div class="new">
                                 <h3>New</h3>
-                                <pre><code>{{ example.new}}</code></pre>
+                                {{ example.new|highlight|safe }}
                             </div>
                         </div>
                         <div class="output">

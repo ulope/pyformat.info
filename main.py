@@ -9,6 +9,9 @@ import jinja2
 import sass
 import click
 import markdown
+import pygments
+import pygments.formatters
+import pygments.lexers
 from rex import rex
 
 
@@ -45,6 +48,12 @@ def generate_css(base_folder, target_folder):
         target_folder.mkdir(parents=True)
     except FileExistsError:
         pass
+
+    pygments_css = Path(base_folder) / '_pygments.scss'
+    with open(str(pygments_css), 'w') as fp:
+        fp.write(pygments.formatters.HtmlFormatter().get_style_defs(
+            '.highlight'))
+
     for file_ in Path(base_folder).glob('*.scss'):
         if not file_.name.startswith('_'):
             target_path = target_folder / (file_.stem + '.{}.css')
@@ -57,10 +66,16 @@ def split_letters(value):
     return ''.join(['<i>{}</i>'.format(letter) for letter in value])
 
 
+def highlight(value):
+    return pygments.highlight(value, pygments.lexers.PythonLexer(),
+                              pygments.formatters.HtmlFormatter())
+
+
 def generate_html(content, output_file):
     env = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
     env.filters['markdown'] = markdown.markdown
     env.filters['lettering'] = split_letters
+    env.filters['highlight'] = highlight
     tmpl = env.get_template('index.html')
     style_mapping = generate_css('assets/sass', 'assets/css')
     with open(output_file, 'w', encoding='utf-8') as fp:

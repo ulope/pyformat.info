@@ -5,3 +5,5 @@ pyformat_site.egg-info
 index.html
 .coverage
 htmlcov
+assets/sass/_pygments.scss
+/tests/fixtures/css/sass/_pygments.scss

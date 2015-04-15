@@ -9,6 +9,7 @@ setup(
         "libsass==0.7.0",
         "Markdown==2.6.1",
         "pytest==2.7.0",
+        "Pygments==2.0.2",
     ],
     entry_points={
         'console_scripts': [
