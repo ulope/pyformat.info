@@ -295,7 +295,7 @@ def getitem_and_getattr_4():
             'name': 'maple'
         }]
 
-    new_result = '{p.type}: {p.kinds[0].name}'.format(p=Plant())
+    new_result = '{p.type}: {p.kinds[0][name]}'.format(p=Plant())
 
     assert new_result == 'tree: oak'  # output
 
