@@ -311,7 +311,7 @@ def test_getitem_and_getattr_4():
         kinds = [{
             'name': "oak",
         }, {
-            'name': 'maple'
+            'name': "maple"
         }]
 
     new_result = '{p.type}: {p.kinds[0][name]}'.format(p=Plant())
@@ -321,11 +321,10 @@ def test_getitem_and_getattr_4():
 
 def test_datetime():
     """
-    # Datetime values
+    # Datetime
 
     Additionally new style formatting allows objects to control their own
-    rendering via the `__format__()` magic method. This for example allows
-    datetime objects to be formatted inline.
+    rendering. This for example allows datetime objects to be formatted inline:
     """
 
     from datetime import datetime
@@ -333,3 +332,23 @@ def test_datetime():
     new_result = '{:%Y-%m-%d %H:%M}'.format(datetime(2001, 2, 3, 4, 5))
 
     assert new_result == '2001-02-03 04:05'  # output
+
+
+def test_custom_1():
+    """
+    # Custom objects
+
+    The above example works through the use of the `__format__()` magic method.
+    You can define custom format handling in your own objects by overriding
+    this method. This gives you complete control over the format syntax used.
+    """
+
+    class HAL9000(object):
+        def __format__(self, format):
+            if format == "open-the-pod-bay-doors":
+                return "I'm afraid I can't do that."
+            return "HAL 9000"
+
+    new_result = '{:open-the-pod-bay-doors}'.format(HAL9000())
+
+    assert new_result == "I'm afraid I can't do that."  # output
