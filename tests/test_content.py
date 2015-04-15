@@ -240,7 +240,7 @@ def test_named_placeholders_2():
     assert new_result == 'Hodor Hodor!'  # output
 
 
-def getitem_and_getattr():
+def test_getitem_and_getattr():
     """
     # Getitem and Getattr
 
@@ -261,7 +261,7 @@ def getitem_and_getattr():
     assert new_result == 'Jean-Luc Picard'  # output
 
 
-def getitem_and_getattr_2():
+def test_getitem_and_getattr_2():
     data = [4, 8, 15, 16, 23, 42]
 
     new_result = '{d[4]} {d[5]}'.format(d=data)
@@ -269,7 +269,7 @@ def getitem_and_getattr_2():
     assert new_result == '23 42'  # output
 
 
-def getitem_and_getattr_3():
+def test_getitem_and_getattr_3():
     """
     As well as accessing attributes on objects via `getattr()`:
     """
@@ -282,7 +282,7 @@ def getitem_and_getattr_3():
     assert new_result == 'tree'  # output
 
 
-def getitem_and_getattr_4():
+def test_getitem_and_getattr_4():
     """
     Both type of access can be freely mixed and arbitrarily nested:
     """
