@@ -1,4 +1,4 @@
-from datetime import datetime
+import pytest
 
 
 def test_simple():
@@ -103,9 +103,13 @@ def test_string_truncating():
 
     Inverse to padding it is also possible to truncate overly long values
     to a specific number of characters.
+
+    The number behind a `.` in the format specifies the precision of the
+    output. For strings that means that the output is truncated to the
+    specified length. In our example this would be 5 characters.
     """
-    old_result = '%5.5s' % ('xylophone', )
-    new_result = '{:5.5}'.format('xylophone')
+    old_result = '%.5s' % ('xylophone', )
+    new_result = '{:.5}'.format('xylophone')
 
     assert old_result == new_result
     assert old_result == 'xylop'  # output
@@ -151,16 +155,31 @@ def test_number_padding():
 
 
 def test_number_padding_2():
-    old_result = '%2.2f' % (3.141592653589793, )
-    new_result = '{:2.2f}'.format(3.141592653589793)
+    """
+    Again similar to truncating strings the precision for floating point
+    numbers limits the number of positions after the decimal point.
+
+    For floating points the padding value represents the length of the complete
+    output. In the example below we want our output to have at least 6
+    characters with 2 after the decimal point.
+    """
+    old_result = '%06.2f' % (3.141592653589793, )
+    new_result = '{:06.2f}'.format(3.141592653589793)
 
     assert old_result == new_result
-    assert old_result == '3.14'  # output
+    assert old_result == '003.14'  # output
 
 
 def test_number_padding_3():
+    """
+    For integer values providing a precision doesn't make much sense and is
+    actually forbidden in the new style (it will result in a ValueError).
+    """
     old_result = '%04d' % (42, )
     new_result = '{:04d}'.format(42)
+
+    with pytest.raises(ValueError):
+        '{:04.2d}'.format(42)
 
     assert old_result == new_result
     assert old_result == '0042'  # output

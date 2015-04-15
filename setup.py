@@ -8,6 +8,7 @@ setup(
         "python-rex==0.4",
         "libsass==0.7.0",
         "Markdown==2.6.1",
+        "pytest==2.7.0",
     ],
     entry_points={
         'console_scripts': [
