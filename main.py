@@ -112,7 +112,7 @@ def parse_function(function):
     output = ""
     lines, _ = inspect.getsourcelines(function)
     for i, line in enumerate(lines):
-        if i == 0 and "def" in line:
+        if line.startswith(('def', '@', )):
             continue
 
         if not seen_doc_start and '''"""''' in line:
@@ -144,7 +144,7 @@ def parse_function(function):
     title, details = parse_docstring(docstr)
 
     return Example(
-        function.__code__.co_name.replace("test_", ""),
+        function.__name__.replace("test_", ""),
         title,
         details,
         dedent("".join(setup)).strip(),
@@ -172,14 +172,16 @@ def main():
 
 
 @main.command()
-@click.option('-o', '--output', default='index.html', help="Path to the output HTML file")
+@click.option('-o', '--output', default='index.html',
+              help="Path to the output HTML file")
 def generate(output):
     generate_html(get_content(), output)
     log.info("Done.")
 
 
 @main.command()
-@click.option('-v', '--verbose', is_flag=True, help="Print function definitions")
+@click.option('-v', '--verbose', is_flag=True,
+              help="Print function definitions")
 def extract(verbose):
     cnt = 0
     for example in get_content():

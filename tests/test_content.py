@@ -1,3 +1,6 @@
+# -*- encoding: utf-8 -*-
+import sys
+
 import pytest
 
 
@@ -39,6 +42,50 @@ def test_simple_3():
     new_result = '{1} {0}'.format('one', 'two')
 
     assert new_result == 'two one'  # output
+
+
+def test_conversion_flags():
+    """
+    # Value conversion
+
+    The new-style simple formatter calls by default the [`__format__()`][1]
+    method of an object for its representation. If you just want to render the
+    output of `str(...)` or `repr(...)` you can use the `!s` or `!r` conversion
+    flags.
+
+    In %-style you usually use `%s` for the string representation but there is
+    `%r` for a `repr(...)` conversion.
+
+    [1]: https://docs.python.org/3/reference/datamodel.html#object.__format__
+
+    """
+    class Data(object):
+        def __str__(self):
+            return 'str'
+
+        def __repr__(self):
+            return 'repr'
+
+    old_result = '%s %r' % (Data(), Data())
+    new_result = '{0!s} {0!r}'.format(Data())
+
+    assert new_result == 'str repr'  # output
+    assert new_result == old_result
+
+
+@pytest.mark.xfail(sys.version_info < (3,), reason="!a not available in Python 2")
+def test_ascii_conversion():
+    """
+    In Python 3 there exists an additional conversion flag that uses the output
+    of `repr(...)` but uses `ascii(...)` instead.
+    """
+    class Data(object):
+        def __repr__(self):
+            return 'räpr'
+
+    new_result = '{0!r} {0!a}'.format(Data())
+
+    assert new_result == 'räpr r\\xe4pr'  # output
 
 
 def test_string_pad_align():

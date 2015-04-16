@@ -1,6 +1,8 @@
 from pathlib import Path
 from shutil import rmtree
 
+import wrapt
+
 from main import parse_docstring
 from main import parse_function
 from main import split_letters
@@ -69,25 +71,26 @@ def test_parse_docstring_without_title():
     assert parse_docstring('not the title') == (None, 'not the title')
 
 
+def dummy_long():
+    """
+    # Title
+
+    Blah
+    """
+
+    x = {'a': 1}
+
+    old_result = "%(a)s" % x
+    new_result = "{x.a}".format(x=x)
+
+    assert old_result == new_result
+    assert new_result == "1"  # output
+
+
 def test_parse_function_complete():
-    def dummy():
-        """
-        # Title
+    example = parse_function(dummy_long)
 
-        Blah
-        """
-
-        x = {'a': 1}
-
-        old_result = "%(a)s" % x
-        new_result = "{x.a}".format(x=x)
-
-        assert old_result == new_result
-        assert new_result == "1"  # output
-
-    example = parse_function(dummy)
-
-    assert example.name == 'dummy'
+    assert example.name == 'dummy_long'
     assert example.title == "Title"
     assert example.details == "Blah"
     assert example.setup == "x = {'a': 1}"
@@ -96,15 +99,16 @@ def test_parse_function_complete():
     assert example.output == "1"
 
 
+def dummy_minimal():
+    new_result = "{}".format(1)
+
+    assert new_result == "1"  # output
+
+
 def test_parse_function_minimal():
-    def dummy():
-        new_result = "{}".format(1)
+    example = parse_function(dummy_minimal)
 
-        assert new_result == "1"  # output
-
-    example = parse_function(dummy)
-
-    assert example.name == 'dummy'
+    assert example.name == 'dummy_minimal'
     assert example.title is None
     assert example.details is None
     assert example.setup == ""
@@ -113,16 +117,33 @@ def test_parse_function_minimal():
     assert example.output == "1"
 
 
+def dummy_empty():
+    pass
+
+
 def test_parse_function_empty():
-    def dummy():
-        pass
+    example = parse_function(dummy_empty)
 
-    example = parse_function(dummy)
-
-    assert example.name == 'dummy'
+    assert example.name == 'dummy_empty'
     assert example.title is None
     assert example.details is None
     assert example.setup == "pass"
     assert example.old == ""
     assert example.new == ""
     assert example.output == ""
+
+
+@wrapt.decorator
+def dummy_decorator(wrapped, instance, args, kwargs):
+    return wrapped(*args, **kwargs)
+
+
+@dummy_decorator
+def dummy_decorated():
+    pass
+
+
+def test_parse_decorated():
+    example = parse_function(dummy_decorated)
+    assert example.name == 'dummy_decorated'
+    assert example.setup == 'pass'
