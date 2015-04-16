@@ -1,6 +1,9 @@
 import hashlib
 import importlib
 import inspect
+import logging
+import sys
+from logging import getLogger
 from textwrap import dedent, indent
 from collections import namedtuple
 from pathlib import Path
@@ -15,6 +18,8 @@ import pygments.lexers
 from rex import rex
 
 
+log = getLogger(__name__)
+
 CONTENT_MODULE_PATH = "tests.test_content"
 
 OUTPUT_RE = rex(r"""s/^.*?assert .*? == ['"](.*)['"].*?# output$\n/\1/""")
@@ -24,6 +29,7 @@ Example = namedtuple("Example", ('name', 'title', 'details', 'setup', 'old', 'ne
 
 def compile_sass(source_path, target_path_pattern):
     # First generate the content from which we can generate the hashname
+    log.info("Compiling SCSS.")
     output = sass.compile(
         filename=str(source_path),
         output_style='compressed')
@@ -42,6 +48,7 @@ def compile_sass(source_path, target_path_pattern):
 
 
 def generate_css(base_folder, target_folder):
+    log.info("Generating CSS.")
     file_mapping = {}
     target_folder = Path(target_folder)
     try:
@@ -72,6 +79,7 @@ def highlight(value):
 
 
 def generate_html(content, output_file):
+    log.info("Rendering HTML.")
     env = jinja2.Environment(loader=jinja2.FileSystemLoader('templates'))
     env.filters['markdown'] = markdown.markdown
     env.filters['lettering'] = split_letters
@@ -147,23 +155,27 @@ def parse_function(function):
 
 
 def get_content():
+    log.info("Parsing content.")
     content_module = importlib.import_module(CONTENT_MODULE_PATH)
     for name, function in sorted(
         inspect.getmembers(content_module, inspect.isfunction),
         key=lambda m: m[1].__code__.co_firstlineno
     ):
+        if not name.startswith('test_'):
+            log.warning("Content function without 'test_' prefix found: '%s'. Ignoring.", name)
         yield parse_function(function)
 
 
 @click.group()
 def main():
-    pass
+    logging.basicConfig(stream=sys.stderr, level=logging.DEBUG, format="%(levelname)-7s %(name)s: %(message)s")
 
 
 @main.command()
 @click.option('-o', '--output', default='index.html', help="Path to the output HTML file")
 def generate(output):
     generate_html(get_content(), output)
+    log.info("Done.")
 
 
 @main.command()
