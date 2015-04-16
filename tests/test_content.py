@@ -352,3 +352,31 @@ def test_custom_1():
     new_result = '{:open-the-pod-bay-doors}'.format(HAL9000())
 
     assert new_result == "I'm afraid I can't do that."  # output
+
+
+def test_side_note():
+    """
+    # Side note about new format
+
+    It can be a litle confusing when you have many string operation
+    like padding, aligning, truncating, etc. in the same string.
+
+    So a little note : the standard formatting is like this
+        `{index_0:>operation_0}{index_1:>operation_1} ...`
+    but you can ommited the `index` if it is in ascending order
+    """
+
+    old_result = '{:<10}'.format('one')
+    new_result = '{0:<10}'.format('one')
+
+    assert old_result == new_result
+    assert old_result == 'one       '  # output
+
+
+def test_side_note_2():
+    """
+    So you can do easily (and mindfully) stuff like this
+    """
+
+    new_result = '{1:*<5}_{0:^>10}'.format('one', 'two')
+    assert new_result == 'two**_^^^^^^^one'
