@@ -143,6 +143,9 @@ def parse_function(function):
     docstr = inspect.getdoc(function)
     title, details = parse_docstring(docstr)
 
+    if not output:
+        log.warning("No output defined in example '%s'.", function.__name__)
+
     return Example(
         function.__name__.replace("test_", ""),
         title,
