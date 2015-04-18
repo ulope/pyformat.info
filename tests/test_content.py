@@ -188,6 +188,20 @@ def test_string_truncate_2():
     assert old_result == 'xylopho'  # output
 
 
+def test_string_trunc_pad():
+    """
+    # Combining truncating and padding
+
+    It is also possible to combine truncating and padding:
+    """
+
+    old_result = '%-10.5s' % ('xylophone', )
+    new_result = '{:10.5}'.format('xylophone')
+
+    assert old_result == new_result
+    assert new_result == 'xylop     '  # output
+
+
 def test_number():
     """
     # Numbers
