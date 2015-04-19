@@ -121,17 +121,32 @@ def test_string_pad_align_2():
     assert old_result == 'test      '  # output
 
 
+def test_string_variable_pad_align():
+    """
+    By argument:
+
+    In the previous example, the value '10' is encoded as part of the format
+    string.  However, it is possible to also supply such values as an
+    argument.
+    """
+    old_result = '%*s' % (-8, 'test')
+    new_result = '{:<{}s}'.format('test', 8)
+
+    assert old_result == new_result
+    assert old_result == 'test    '  # output
+
+
 def test_string_pad_align_3():
     """
-    Again new style formatting surpasses the old variant by providing more
+    Again, new style formatting surpasses the old variant by providing more
     control over how values are padded and aligned.
 
     You are able to choose the padding character:
     """
 
-    new_result = '{:*<10}'.format('test')
+    new_result = '{:_<10}'.format('test')
 
-    assert new_result == 'test******'  # output
+    assert new_result == 'test______'  # output
 
 
 def test_string_pad_align_4():
@@ -160,6 +175,17 @@ def test_string_truncating():
 
     assert old_result == new_result
     assert old_result == 'xylop'  # output
+
+
+def test_string_truncate_2():
+    """
+    By argument:
+    """
+    old_result = '%.*s' % (7, 'xylophone', )
+    new_result = '{:.{}}'.format('xylophone', 7)
+
+    assert old_result == new_result
+    assert old_result == 'xylopho'  # output
 
 
 def test_number():
