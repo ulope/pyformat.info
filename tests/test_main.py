@@ -1,3 +1,6 @@
+import ast
+import inspect
+
 from pathlib import Path
 from shutil import rmtree
 
@@ -5,6 +8,7 @@ import wrapt
 
 from main import parse_docstring
 from main import parse_function
+from main import get_content
 from main import split_letters
 from main import generate_css
 
@@ -83,19 +87,19 @@ def dummy_long():
     old_result = "%(a)s" % x
     new_result = "{x.a}".format(x=x)
 
+    assert new_result == "1"
     assert old_result == new_result
-    assert new_result == "1"  # output
 
 
 def test_parse_function_complete():
-    example = parse_function(dummy_long)
+    example = parse_function(func_to_ast(dummy_long))
 
     assert example.name == 'dummy_long'
     assert example.title == "Title"
     assert example.details == "Blah"
     assert example.setup == "x = {'a': 1}"
-    assert example.old == '"%(a)s" % x'
-    assert example.new == '"{x.a}".format(x=x)'
+    assert example.old == "'%(a)s' % x"
+    assert example.new == "'{x.a}'.format(x=x)"
     assert example.output == "1"
 
 
@@ -106,14 +110,14 @@ def dummy_minimal():
 
 
 def test_parse_function_minimal():
-    example = parse_function(dummy_minimal)
+    example = parse_function(func_to_ast(dummy_minimal))
 
     assert example.name == 'dummy_minimal'
     assert example.title is None
     assert example.details is None
     assert example.setup == ""
     assert example.old == ""
-    assert example.new == '"{}".format(1)'
+    assert example.new == "'{}'.format(1)"
     assert example.output == "1"
 
 
@@ -122,7 +126,7 @@ def dummy_empty():
 
 
 def test_parse_function_empty():
-    example = parse_function(dummy_empty)
+    example = parse_function(func_to_ast(dummy_empty))
 
     assert example.name == 'dummy_empty'
     assert example.title is None
@@ -144,6 +148,26 @@ def dummy_decorated():
 
 
 def test_parse_decorated():
-    example = parse_function(dummy_decorated)
+    example = parse_function(func_to_ast(dummy_decorated))
     assert example.name == 'dummy_decorated'
     assert example.setup == 'pass'
+
+
+def test_get_content(tmpdir):
+    testfile = tmpdir.join('test_content.py')
+    testfile.write('''
+def test_something():
+    new_result = '{}'.format('hello')
+    assert new_result == 'hello'
+
+def unknown():
+    pass
+    ''')
+
+    result = list(get_content(filename=str(testfile)))
+    assert len(result) == 1
+
+
+
+def func_to_ast(func):
+    return ast.parse(inspect.getsource(func)).body[0]

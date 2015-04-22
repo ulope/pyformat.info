@@ -1,3 +1,5 @@
+import ast
+import _ast
 import hashlib
 import importlib
 import inspect
@@ -15,16 +17,26 @@ import markdown
 import pygments
 import pygments.formatters
 import pygments.lexers
+import astunparse
 from rex import rex
 
 
 log = getLogger(__name__)
 
-CONTENT_MODULE_PATH = "tests.test_content"
+CONTENT_MODULE_PATH = "tests/test_content.py"
 
 OUTPUT_RE = rex(r"""s/^.*?assert .*? == ['"](.*)['"].*?# output$\n/\1/""")
 
 Example = namedtuple("Example", ('name', 'title', 'details', 'setup', 'old', 'new', 'output'))
+
+
+def unparse(node, strip=None):
+    result = astunparse.unparse(node)
+    if strip:
+        result = result.lstrip().rstrip()
+        if isinstance(node, _ast.BinOp):
+            return result[1:-1]
+    return result
 
 
 def compile_sass(source_path, target_path_pattern):
@@ -102,71 +114,56 @@ def parse_docstring(docstring):
         return (None, '\n'.join(lines) or None)
 
 
-def parse_function(function):
-    seen_doc_start = False
-    seen_doc_end = False
-    seen_setup_end = False
+def parse_function(node):
+    old_style = None
+    new_style = None
+    output = None
     setup = []
-    old = ""
-    new = ""
-    output = ""
-    lines, _ = inspect.getsourcelines(function)
-    for i, line in enumerate(lines):
-        if line.startswith(('def', '@', )):
+    setup_done = False
+    title, details = parse_docstring(ast.get_docstring(node, clean=True))
+    name = node.name[5:] if node.name.startswith('test_') else node.name
+
+    for n in node.body:
+        # Ignore the docstring
+        if isinstance(n, _ast.Expr) and isinstance(n.value, _ast.Str):
             continue
+        if isinstance(n, _ast.Assign) and n.targets[0].id == 'old_result':
+            setup_done = True
+            old_style = unparse(n.value, strip=True)
+        if isinstance(n, _ast.Assign) and n.targets[0].id == 'new_result':
+            setup_done = True
+            new_style = unparse(n.value, strip=True)
+        if isinstance(n, _ast.Assert) and isinstance(
+                n.test.comparators[0], _ast.Str):
+            setup_done = True
+            output = n.test.comparators[0].s
+        if not setup_done:
+            setup.append(n)
 
-        if not seen_doc_start and '''"""''' in line:
-            seen_doc_start = True
-            continue
-
-        if not seen_doc_end and '''"""''' in line:
-            seen_doc_end = True
-            continue
-
-        if not old and 'old_result' in line:
-            old = line.strip().replace("old_result = ", "")
-            seen_setup_end = True
-            continue
-
-        if not new and 'new_result' in line:
-            new = line.strip().replace("new_result = ", "")
-            seen_setup_end = True
-            continue
-
-        if seen_setup_end and not output and "# output" in line:
-            output = OUTPUT_RE(line)
-            break
-
-        if (seen_doc_end or not seen_doc_start) and not seen_setup_end:
-            setup.append(line)
-
-    docstr = inspect.getdoc(function)
-    title, details = parse_docstring(docstr)
-
-    if not output:
-        log.warning("No output defined in example '%s'.", function.__name__)
+    if setup:
+        setup = unparse(setup, strip=True)
 
     return Example(
-        function.__name__.replace("test_", ""),
+        name,
         title,
         details,
-        dedent("".join(setup)).strip(),
-        old,
-        new,
-        output
+        setup or "",
+        old_style or "",
+        new_style or "",
+        output or ""
     )
 
 
-def get_content():
+def get_content(filename=None):
     log.info("Parsing content.")
-    content_module = importlib.import_module(CONTENT_MODULE_PATH)
-    for name, function in sorted(
-        inspect.getmembers(content_module, inspect.isfunction),
-        key=lambda m: m[1].__code__.co_firstlineno
-    ):
-        if not name.startswith('test_'):
-            log.warning("Content function without 'test_' prefix found: '%s'. Ignoring.", name)
-        yield parse_function(function)
+    if filename is None:
+        filename = CONTENT_MODULE_PATH
+    with open(filename, encoding='utf-8') as fp:
+        source = fp.read()
+        module = ast.parse(source)
+        for node in module.body:
+            if isinstance(node, _ast.FunctionDef) and node.name.startswith('test_'):
+                yield parse_function(node)
 
 
 @click.group()
