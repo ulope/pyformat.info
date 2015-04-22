@@ -25,10 +25,8 @@ Each test case can consist of following elements:
   variable called `old_result`
 * A value computation for the new-style formatter which is assigned to a
   variable called `new_result`
-* A couple of assertions with one sporting the comment `# output` after it in
-  order to treat the string used in that assertion as the result of the
-  formatting operation. The string value in that assertion is then rendered as
-  output on the website
+* A handful of assertions. The last one that has a string on the right side is
+  used as output on the website.
 * An optional setup section that is placed after the docstring and before the
   `old_result` asignment
 
