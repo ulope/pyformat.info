@@ -1,0 +1,6 @@
+[run]
+source = main.py
+branch = True
+
+[report]
+omit = *tests*
