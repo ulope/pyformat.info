@@ -153,6 +153,28 @@ def test_parse_decorated():
     assert example.setup == 'pass'
 
 
+def test_get_content_for_cls(tmpdir):
+    testfile = tmpdir.join('test_content.py')
+    testfile.write('''
+class TestSomethingElse():
+    """
+    # Title
+
+    Description
+    """
+    def test_se(self):
+        pass
+
+    ''')
+    result = list(get_content(filename=str(testfile)))
+    assert len(result) == 1
+    section = result[0]
+    assert section.title == "Title"
+    assert section.name == "SomethingElse"
+    assert len(section.examples) == 1
+    assert section.examples[0].name == "SomethingElse__se"
+
+
 def test_get_content(tmpdir):
     testfile = tmpdir.join('test_content.py')
     testfile.write('''
@@ -160,13 +182,16 @@ def test_something():
     new_result = '{}'.format('hello')
     assert new_result == 'hello'
 
+class TestSomethingElse():
+    def test_se(self):
+        pass
+
 def unknown():
     pass
     ''')
 
     result = list(get_content(filename=str(testfile)))
-    assert len(result) == 1
-
+    assert len(result) == 2
 
 
 def func_to_ast(func):
