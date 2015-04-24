@@ -1,3 +1,54 @@
+<!DOCTYPE html>
+{% macro render_section(section) -%}
+<section id="{{ section.name }}">
+    {% if section.title %}<h2>{{ section.title }}</h2>{% endif %}
+    {% if section.details %}
+    <div class="description">{{ section.details|markdown }}</div>
+    {% endif %}
+    {% for example in section.examples %}
+        {{ render_example(example ) }}
+    {% endfor %}
+</section>
+{%- endmacro %}
+{% macro render_example(example) -%}
+    <section id="{{ example.name }}" {% if not example.title %}class="continuation"{% endif %}>
+        {% if example.title %}
+            <h2>{{ example.title }}</h2>
+        {% endif %}
+        {% if example.details %}
+            <div class="description">{{ example.details|markdown }}</div>
+            {% if not example.old %}
+                <p class="notice">This operation is not available with old-style formatting.</p>
+            {% endif %}
+        {% endif %}
+        {% if example.setup %}
+        <div class="setup">
+            <h3>Setup</h3>
+            {{ example.setup|highlight|safe }}
+        </div>
+        {% endif %}
+        <div class="code">
+            {% if example.old %}
+                <div class="old">
+                    <h3>Old</h3>
+                    {{ example.old|highlight|safe }}
+                </div>
+            {% endif %}
+            {% if example.new %}
+            <div class="new">
+                <h3>New</h3>
+                {{ example.new|highlight|safe }}
+            </div>
+            {% endif %}
+        </div>
+        {% if example.output %}
+        <div class="output">
+            <h3>Output</h3>
+            <pre><code>{{ example.output|lettering }}</code></pre>
+        </div>
+        {% endif %}
+    </section>
+{%- endmacro %}
 <html lang="en">
     <head>
         <title>PyFormat: Using % and .format() for great good!</title>
@@ -33,46 +84,27 @@
                     <ol>
                         {% for example in examples %}
                             {% if example.title %}
-                                <li><a href="#{{ example.name }}">{{ example.title }}</a></li>
+                                <li>
+                                    <a href="#{{ example.name }}">{{ example.title }}</a>
+                                    {% if example.examples %}
+                                    <ol>
+                                        {% for e in example.examples %}
+                                            <li><a href="#{{ e.name }}">{{ e.title }}</a></li>
+                                        {% endfor %}
+                                    </ol>
+                                    {% endif %}
+                                </li>
                             {% endif %}
                         {% endfor %}
                     </ol>
                 </section>
                 <section id="details">
                     {% for example in examples %}
-                    <section id="{{ example.name }}" {% if not example.title %}class="continuation"{% endif %}>
-                        {% if example.title %}
-                            <h2>{{ example.title }}</h2>
+                        {% if example.examples %}
+                        {{ render_section(example) }}
+                        {% else %}
+                        {{ render_example(example) }}
                         {% endif %}
-                        {% if example.details %}
-                            <div class="description">{{ example.details|markdown }}</div>
-                            {% if not example.old %}
-                                <p class="notice">This operation is not available with old-style formatting.</p>
-                            {% endif %}
-                        {% endif %}
-                        {% if example.setup %}
-                        <div class="setup">
-                            <h3>Setup</h3>
-                            {{ example.setup|highlight|safe }}
-                        </div>
-                        {% endif %}
-                        <div class="code">
-                            {% if example.old %}
-                                <div class="old">
-                                    <h3>Old</h3>
-                                    {{ example.old|highlight|safe }}
-                                </div>
-                            {% endif %}
-                            <div class="new">
-                                <h3>New</h3>
-                                {{ example.new|highlight|safe }}
-                            </div>
-                        </div>
-                        <div class="output">
-                            <h3>Output</h3>
-                            <pre><code>{{ example.output|lettering }}</code></pre>
-                        </div>
-                    </section>
                     {% endfor %}
                 </section>
             </div>
@@ -80,7 +112,7 @@
                 <p>Curated by <a href="https://twitter.com/ulope">Ulrich Petri</a> &amp; <a href="https://zerokspot.com/">Horst Gutmann</a>
             </footer>
         </div>
-    
+
         <!-- Piwik -->
         <script type="text/javascript">
           var _paq = _paq || [];

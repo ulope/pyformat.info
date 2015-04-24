@@ -1,12 +1,9 @@
 import ast
 import _ast
 import hashlib
-import importlib
-import inspect
 import logging
 import sys
 from logging import getLogger
-from textwrap import dedent, indent
 from collections import namedtuple
 from pathlib import Path
 
@@ -26,6 +23,8 @@ log = getLogger(__name__)
 CONTENT_MODULE_PATH = "tests/test_content.py"
 
 OUTPUT_RE = rex(r"""s/^.*?assert .*? == ['"](.*)['"].*?# output$\n/\1/""")
+
+Section = namedtuple('Section', ('name', 'title', 'details', 'examples'))
 
 Example = namedtuple("Example", ('name', 'title', 'details', 'setup', 'old', 'new', 'output'))
 
@@ -154,6 +153,24 @@ def parse_function(node):
     )
 
 
+def parse_class(node):
+    """
+    parse_class parses the given node representing a test class for example
+    test cases and puts everything into a Section object.
+    """
+    name = node.name[4:]
+    title, details = parse_docstring(ast.get_docstring(node))
+    examples = []
+
+    for n in node.body:
+        if isinstance(n, _ast.FunctionDef) and n.name.startswith('test_'):
+            example = parse_function(n)
+            examples.append(example._replace(
+                name='{}__{}'.format(name, example.name)))
+
+    return Section(name, title, details, examples)
+
+
 def get_content(filename=None):
     log.info("Parsing content.")
     if filename is None:
@@ -164,6 +181,8 @@ def get_content(filename=None):
         for node in module.body:
             if isinstance(node, _ast.FunctionDef) and node.name.startswith('test_'):
                 yield parse_function(node)
+            if isinstance(node, _ast.ClassDef) and node.name.startswith('Test'):
+                yield parse_class(node)
 
 
 @click.group()

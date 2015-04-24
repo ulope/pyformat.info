@@ -36,9 +36,19 @@ pre {
 
 section {
     margin-top: 50px;
+}
 
-    &.continuation {
-        margin-top: 5px;
+#details {
+    section {
+        &.continuation {
+            margin-top: 5px;
+        }
+        section {
+            margin-left: 20px;
+            h2 {
+                font-size: 1.8rem;
+            }
+        }
     }
 }
 
