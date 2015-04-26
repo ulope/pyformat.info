@@ -6,6 +6,7 @@ import sys
 from logging import getLogger
 from collections import namedtuple
 from pathlib import Path
+from textwrap import indent
 
 import jinja2
 import sass
@@ -20,7 +21,7 @@ from rex import rex
 
 log = getLogger(__name__)
 
-CONTENT_MODULE_PATH = "tests/test_content.py"
+CONTENT_MODULE_PATH = Path("tests/test_content.py")
 
 OUTPUT_RE = rex(r"""s/^.*?assert .*? == ['"](.*)['"].*?# output$\n/\1/""")
 
@@ -61,18 +62,18 @@ def compile_sass(source_path, target_path_pattern):
 def generate_css(base_folder, target_folder):
     log.info("Generating CSS.")
     file_mapping = {}
-    target_folder = Path(target_folder)
+    target_folder = target_folder
     try:
         target_folder.mkdir(parents=True)
     except FileExistsError:
         pass
 
-    pygments_css = Path(base_folder) / '_pygments.scss'
+    pygments_css = base_folder / '_pygments.scss'
     with open(str(pygments_css), 'w') as fp:
         fp.write(pygments.formatters.HtmlFormatter().get_style_defs(
             '.highlight'))
 
-    for file_ in Path(base_folder).glob('*.scss'):
+    for file_ in base_folder.glob('*.scss'):
         if not file_.name.startswith('_'):
             target_path = target_folder / (file_.stem + '.{}.css')
             target_path = compile_sass(file_, target_path)
@@ -96,8 +97,8 @@ def generate_html(content, output_file):
     env.filters['lettering'] = split_letters
     env.filters['highlight'] = highlight
     tmpl = env.get_template('index.html')
-    style_mapping = generate_css('assets/sass', 'assets/css')
-    with open(output_file, 'w', encoding='utf-8') as fp:
+    style_mapping = generate_css(Path('assets/sass'), Path('assets/css'))
+    with open(str(output_file), 'w', encoding='utf-8') as fp:
         fp.write(tmpl.render(examples=list(content), styles=style_mapping))
 
 
@@ -172,10 +173,13 @@ def parse_class(node):
 
 
 def get_content(filename=None):
+    """
+    get_content generates sections or examples out of the given file path.
+    """
     log.info("Parsing content.")
     if filename is None:
         filename = CONTENT_MODULE_PATH
-    with open(filename, encoding='utf-8') as fp:
+    with open(str(filename), encoding='utf-8') as fp:
         source = fp.read()
         module = ast.parse(source)
         for node in module.body:
@@ -194,7 +198,7 @@ def main():
 @click.option('-o', '--output', default='index.html',
               help="Path to the output HTML file")
 def generate(output):
-    generate_html(get_content(), output)
+    generate_html(get_content(), Path(output))
     log.info("Done.")
 
 

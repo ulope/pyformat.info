@@ -166,7 +166,7 @@ class TestSomethingElse():
         pass
 
     ''')
-    result = list(get_content(filename=str(testfile)))
+    result = list(get_content(filename=Path(str(testfile))))
     assert len(result) == 1
     section = result[0]
     assert section.title == "Title"
@@ -190,7 +190,7 @@ def unknown():
     pass
     ''')
 
-    result = list(get_content(filename=str(testfile)))
+    result = list(get_content(filename=Path(str(testfile))))
     assert len(result) == 2
 
 
