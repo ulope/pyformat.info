@@ -169,3 +169,12 @@ footer {
         }
     }
 }
+
+.github-fork-ribbon {
+    background: $yellow;
+
+    a, a:hover {
+        color: $base;
+        text-shadow: 0 -1px rgba(255, 255, 255, 0.5);
+    }
+}
