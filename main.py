@@ -1,7 +1,9 @@
 import ast
 import _ast
+import datetime
 import hashlib
 import logging
+import subprocess
 import sys
 from logging import getLogger
 from collections import namedtuple
@@ -15,6 +17,7 @@ import markdown
 import pygments
 import pygments.formatters
 import pygments.lexers
+import pytz
 import astunparse
 from rex import rex
 
@@ -29,6 +32,8 @@ Section = namedtuple('Section', ('name', 'title', 'details', 'examples'))
 
 Example = namedtuple("Example", ('name', 'title', 'details', 'setup', 'old', 'new', 'output'))
 
+Version = namedtuple('Version', ('revid', 'datetime'))
+
 
 def unparse(node, strip=None):
     result = astunparse.unparse(node)
@@ -37,6 +42,13 @@ def unparse(node, strip=None):
         if isinstance(node, _ast.BinOp):
             return result[1:-1]
     return result
+
+
+def generate_version():
+    revid = subprocess.check_output(
+        ['git', 'rev-parse', 'HEAD']).decode('utf-8').rstrip()
+    dt = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
+    return Version(revid=revid, datetime=dt)
 
 
 def compile_sass(source_path, target_path_pattern):
@@ -99,7 +111,8 @@ def generate_html(content, output_file):
     tmpl = env.get_template('index.html')
     style_mapping = generate_css(Path('assets/sass'), Path('assets/css'))
     with open(str(output_file), 'w', encoding='utf-8') as fp:
-        fp.write(tmpl.render(examples=list(content), styles=style_mapping))
+        fp.write(tmpl.render(examples=list(content), styles=style_mapping,
+                             version=generate_version()))
 
 
 def parse_docstring(docstring):
