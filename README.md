@@ -10,7 +10,7 @@ practical examples.
 
 ## What is Where?
 
-The website you can find on http://pyformat.info is statically generated using
+The website you can find on https://pyformat.info is statically generated using
 the `main.py`. This script parses the test cases specified in
 `tests/test_content.py` which is more or less where all the content of the
 final site comes from.
