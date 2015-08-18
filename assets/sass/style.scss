@@ -10,6 +10,10 @@ $radius: 8px;
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro|Source+Code+Pro');
 @import "pygments";
 
+.highlight {
+    background: transparent;
+}
+
 html {
     font-family: 'Source Sans Pro', Arial, sans-serif;
     font-size: 62.5%;
