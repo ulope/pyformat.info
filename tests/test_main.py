@@ -5,6 +5,8 @@ from pathlib import Path
 from shutil import rmtree
 
 import wrapt
+import pytest
+import sys
 
 from main import parse_docstring
 from main import parse_function
@@ -91,6 +93,7 @@ def dummy_long():
     assert old_result == new_result
 
 
+@pytest.mark.xfail(sys.version_info >= (3, 5), reason="astunparse is currently broken on Python >= 3.5")
 def test_parse_function_complete():
     example = parse_function(func_to_ast(dummy_long))
 
@@ -109,6 +112,7 @@ def dummy_minimal():
     assert new_result == "1"  # output
 
 
+@pytest.mark.xfail(sys.version_info >= (3, 5), reason="astunparse is currently broken on Python >= 3.5")
 def test_parse_function_minimal():
     example = parse_function(func_to_ast(dummy_minimal))
 
@@ -175,6 +179,7 @@ class TestSomethingElse():
     assert section.examples[0].name == "SomethingElse__se"
 
 
+@pytest.mark.xfail(sys.version_info >= (3, 5), reason="astunparse is currently broken on Python >= 3.5")
 def test_get_content(tmpdir):
     testfile = tmpdir.join('test_content.py')
     testfile.write('''

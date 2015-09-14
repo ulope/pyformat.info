@@ -1,6 +1,6 @@
 [run]
-source = main.py
+source = main
 branch = True
+omit = *tests*
 
 [report]
-omit = *tests*
