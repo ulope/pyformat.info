@@ -449,9 +449,10 @@ def my_staircase():
     The user defines how big they want the staircase to be and the program prints sufficient blank spaces in front of the
     correct amount of hashtag keys(#). This formatting works for all staircase lengths as provided bu user.
     """
-n = int(raw_input().strip())
-staircase = []
+    
+    n = int(raw_input().strip())
+    staircase = []
 
-for i in range(0,n):
-    staircase = n * "#"
-    print '{:>{}s}'.format(staircase[0:i+1], n)
+    for i in range(0,n):
+        staircase = n * "#"
+        print '{:>{}s}'.format(staircase[0:i+1], n)
