@@ -450,7 +450,9 @@ def my_staircase():
     correct amount of hashtag keys(#). This formatting works for all staircase lengths as provided bu user.
     """
     
-    n = int(raw_input().strip())
+    # by changing the integer n, the user can make the staircase bigger or smaller
+    #n = int(raw_input().strip())
+    n = 10
     staircase = []
 
     for i in range(0,n):
