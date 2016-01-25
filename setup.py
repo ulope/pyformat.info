@@ -8,7 +8,7 @@ setup(
         "python-rex==0.4",
         "libsass==0.8.2",
         "Markdown==2.6.2",
-        "pytest==2.7.1",
+        "pytest==2.8.7",
         "Pygments==2.0.2",
         "astunparse==1.2.2",
         "pytz==2015.4",
