@@ -410,7 +410,7 @@ def test_datetime():
     """
     # Datetime
 
-    Additionally new style formatting allows objects to control their own
+    New style formatting also allows objects to control their own
     rendering. This for example allows datetime objects to be formatted inline:
     """
 
@@ -419,6 +419,83 @@ def test_datetime():
     new_result = '{:%Y-%m-%d %H:%M}'.format(datetime(2001, 2, 3, 4, 5))
 
     assert new_result == '2001-02-03 04:05'  # output
+
+
+def test_nested_align():
+    """
+    # Nested Formats
+
+    Additionally, new style formatting allows all of the components of
+    the format to be specified dynamically using nested formats.
+
+    Nested formats can be applied to every portion of the format after
+    the colon. Variable names can not be set dynamically because double
+    braces are the escape characters for braces, so something like
+    `'{{which}}'.format(0.1, 0.2, which=1)` would result in `'{which}'`,
+    not in `'0.2'`. Braces are not allowed in attribute names and item
+    indices are passed literally, so nested formats can not be used
+    anywhere before the colon in a format.
+
+    Dynamically select alignment:
+    """
+
+    new_result = '{:{align}{width}}'.format('test', align='^', width='10')
+
+    assert new_result == '   test   '  # output
+
+
+def test_nested_prec():
+    """
+    Dynamically selected precision:
+    """
+
+    new_result = '{:.{prec}} = {:.{prec}}'.format('Gibberish', 2.7182818284, prec=3)
+
+    assert new_result = 'Gib = 2.72'  # output
+
+
+def test_nested_prec_2():
+    """
+    The nested format can be used to replace *any* part of the format
+    spec, so the precision example above could be rewritten as:
+    """
+
+    new_result = '{:{prec}} = {:{prec}}'.format('Gibberish', 2.7182818284, prec='.3')
+
+    assert new_result = 'Gib = 2.72'  # output
+
+
+def test_nested_date():
+    """
+    The components of a date-time can be set separately:
+    """
+
+    from datetime import datetime
+
+    new_result = '{:{dfmt} {tfmt}}'.format(datetime(2001, 2, 3, 4, 5), dfmt='%Y-%m-%d', tfmt='%H:%M')
+
+    assert new_result = '2001-02-03 04:05'  # output
+
+
+def test_nested_order_1():
+    """
+    The nested formats can be positional arguments. Position depends
+    on the order of the opening curly braces:
+    """
+
+    new_result = '{:{}{}{}.{}}'.format(2.7182818284, '>', '+', 10, 3)
+
+    assert new_result = '     +2.72'  # output
+
+
+def test_nested_order_2():
+    """
+    And of course keyword arguments can be added to the mix as before:
+    """
+
+    new_result = '{:{}{sign}{}.{}}'.format(2.7182818284, '>', 10, 3, sign='+')
+
+    assert new_result = '     +2.72'  # output
 
 
 def test_custom_1():
