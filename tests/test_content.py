@@ -451,7 +451,7 @@ def test_nested_prec():
 
     new_result = '{:.{prec}} = {:.{prec}}'.format('Gibberish', 2.7182818284, prec=3)
 
-    assert new_result = 'Gib = 2.72'  # output
+    assert new_result == 'Gib = 2.72'  # output
 
 
 def test_nested_prec_2():
@@ -462,7 +462,7 @@ def test_nested_prec_2():
 
     new_result = '{:{prec}} = {:{prec}}'.format('Gibberish', 2.7182818284, prec='.3')
 
-    assert new_result = 'Gib = 2.72'  # output
+    assert new_result == 'Gib = 2.72'  # output
 
 
 def test_nested_date():
@@ -474,7 +474,7 @@ def test_nested_date():
 
     new_result = '{:{dfmt} {tfmt}}'.format(datetime(2001, 2, 3, 4, 5), dfmt='%Y-%m-%d', tfmt='%H:%M')
 
-    assert new_result = '2001-02-03 04:05'  # output
+    assert new_result == '2001-02-03 04:05'  # output
 
 
 def test_nested_order_1():
@@ -485,7 +485,7 @@ def test_nested_order_1():
 
     new_result = '{:{}{}{}.{}}'.format(2.7182818284, '>', '+', 10, 3)
 
-    assert new_result = '     +2.72'  # output
+    assert new_result == '     +2.72'  # output
 
 
 def test_nested_order_2():
@@ -495,7 +495,7 @@ def test_nested_order_2():
 
     new_result = '{:{}{sign}{}.{}}'.format(2.7182818284, '>', 10, 3, sign='+')
 
-    assert new_result = '     +2.72'  # output
+    assert new_result == '     +2.72'  # output
 
 
 def test_custom_1():
