@@ -1,6 +1,0 @@
-[run]
-source = main
-branch = True
-omit = *tests*
-
-[report]
