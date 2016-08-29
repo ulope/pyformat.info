@@ -121,21 +121,6 @@ def test_string_pad_align_2():
     assert old_result == 'test      '  # output
 
 
-def test_string_variable_pad_align():
-    """
-    By argument:
-
-    In the previous example, the value '10' is encoded as part of the format
-    string.  However, it is possible to also supply such values as an
-    argument.
-    """
-    old_result = '%*s' % (-8, 'test')
-    new_result = '{:<{}s}'.format('test', 8)
-
-    assert old_result == new_result
-    assert old_result == 'test    '  # output
-
-
 def test_string_pad_align_3():
     """
     Again, new style formatting surpasses the old variant by providing more
@@ -175,17 +160,6 @@ def test_string_truncating():
 
     assert old_result == new_result
     assert old_result == 'xylop'  # output
-
-
-def test_string_truncate_2():
-    """
-    By argument:
-    """
-    old_result = '%.*s' % (7, 'xylophone', )
-    new_result = '{:.{}}'.format('xylophone', 7)
-
-    assert old_result == new_result
-    assert old_result == 'xylopho'  # output
 
 
 def test_string_trunc_pad():
@@ -421,20 +395,14 @@ def test_datetime():
     assert new_result == '2001-02-03 04:05'  # output
 
 
-def test_nested_align():
+def test_param_align():
     """
-    # Nested Formats
+    # Parametrized formats
 
     Additionally, new style formatting allows all of the components of
-    the format to be specified dynamically using nested formats.
-
-    Nested formats can be applied to every portion of the format after
-    the colon. Variable names can not be set dynamically because double
-    braces are the escape characters for braces, so something like
-    `'{{which}}'.format(0.1, 0.2, which=1)` would result in `'{which}'`,
-    not in `'0.2'`. Braces are not allowed in attribute names and item
-    indices are passed literally, so nested formats can not be used
-    anywhere before the colon in a format.
+    the format to be specified dynamically using parametrization. Parametrized
+    formats are nested expressions in braces that can appear anywhere in the
+    parent format after the colon.
 
     Dynamically select alignment:
     """
@@ -444,7 +412,7 @@ def test_nested_align():
     assert new_result == '   test   '  # output
 
 
-def test_nested_prec():
+def test_param_prec():
     """
     Dynamically selected precision:
     """
@@ -454,7 +422,7 @@ def test_nested_prec():
     assert new_result == 'Gib = 2.72'  # output
 
 
-def test_nested_prec_2():
+def test_param_prec_2():
     """
     The nested format can be used to replace *any* part of the format
     spec, so the precision example above could be rewritten as:
@@ -465,7 +433,7 @@ def test_nested_prec_2():
     assert new_result == 'Gib = 2.72'  # output
 
 
-def test_nested_date():
+def test_param_date():
     """
     The components of a date-time can be set separately:
     """
@@ -477,7 +445,7 @@ def test_nested_date():
     assert new_result == '2001-02-03 04:05'  # output
 
 
-def test_nested_order_1():
+def test_param_order_1():
     """
     The nested formats can be positional arguments. Position depends
     on the order of the opening curly braces:
@@ -488,7 +456,7 @@ def test_nested_order_1():
     assert new_result == '     +2.72'  # output
 
 
-def test_nested_order_2():
+def test_param_order_2():
     """
     And of course keyword arguments can be added to the mix as before:
     """
