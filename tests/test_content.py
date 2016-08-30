@@ -417,9 +417,9 @@ def test_param_prec():
     Dynamically selected precision:
     """
 
-    new_result = '{:.{prec}} = {:.{prec}}'.format('Gibberish', 2.7182818284, prec=3)
+    new_result = '{:.{prec}} = {:.{prec}f}'.format('Gibberish', 2.7182818284, prec=3)
 
-    assert new_result == 'Gib = 2.72'  # output
+    assert new_result == 'Gib = 2.718'  # output
 
 
 def test_param_prec_2():
