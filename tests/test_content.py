@@ -488,9 +488,10 @@ def test_custom_1():
     """
     # Custom objects
 
-    The above example works through the use of the `__format__()` magic method.
-    You can define custom format handling in your own objects by overriding
-    this method. This gives you complete control over the format syntax used.
+    The datetime example works through the use of the `__format__()` magic
+    method. You can define custom format handling in your own objects by
+    overriding this method. This gives you complete control over the format
+    syntax used.
     """
 
     class HAL9000(object):
