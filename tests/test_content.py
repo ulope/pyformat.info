@@ -404,6 +404,10 @@ def test_param_align():
     formats are nested expressions in braces that can appear anywhere in the
     parent format after the colon.
 
+    Old style formatting also supports some parametrization but is much more
+    limited. Namely it only allows parametrization of the width and precision
+    of the output.
+
     Dynamically select alignment:
     """
 
@@ -417,9 +421,23 @@ def test_param_prec():
     Dynamically selected precision:
     """
 
+    old_result = '%.*s = %.*f' % (3, 'Gibberish', 3, 2.7182818284)
     new_result = '{:.{prec}} = {:.{prec}f}'.format('Gibberish', 2.7182818284, prec=3)
 
+    assert old_result == new_result
     assert new_result == 'Gib = 2.718'  # output
+
+
+def test_param_width_prec():
+    """
+    Width and precision:
+    """
+
+    old_result = '%*.*f' % (5, 2, 2.7182818284,)
+    new_result = '{:{width}.{prec}f}'.format(2.7182818284, width=5, prec=2)
+
+    assert old_result == new_result
+    assert new_result == " 2.72"
 
 
 def test_param_prec_2():
