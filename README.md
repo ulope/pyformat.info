@@ -43,3 +43,13 @@ short info message about what is going on there as the docstring.
 
 Once you have that, simply open a pull-request! Please make sure that you code
 is PEP8-compliant (except for the line length).
+
+
+## Running the tests
+
+We use [`py.test`](http://pytest.org) to both test the functionality of the script
+generating the static HTML output as well as ensuring that the examples on the
+page are syntactically correct and produce the desired output.
+
+The easiest way to run the tests on all supported Python versions is by using
+[`tox`](http://tox.testrun.org) for which this repository contains a configuration file.
