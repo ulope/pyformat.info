@@ -408,7 +408,7 @@ def test_param_align():
     limited. Namely it only allows parametrization of the width and precision
     of the output.
 
-    Dynamically select alignment:
+    Parametrized alignment and width:
     """
 
     new_result = '{:{align}{width}}'.format('test', align='^', width='10')
@@ -418,11 +418,11 @@ def test_param_align():
 
 def test_param_prec():
     """
-    Dynamically selected precision:
+    Parametrized precision:
     """
 
-    old_result = '%.*s = %.*f' % (3, 'Gibberish', 3, 2.7182818284)
-    new_result = '{:.{prec}} = {:.{prec}f}'.format('Gibberish', 2.7182818284, prec=3)
+    old_result = '%.*s = %.*f' % (3, 'Gibberish', 3, 2.7182)
+    new_result = '{:.{prec}} = {:.{prec}f}'.format('Gibberish', 2.7182, prec=3)
 
     assert old_result == new_result
     assert new_result == 'Gib = 2.718'  # output
@@ -433,8 +433,8 @@ def test_param_width_prec():
     Width and precision:
     """
 
-    old_result = '%*.*f' % (5, 2, 2.7182818284,)
-    new_result = '{:{width}.{prec}f}'.format(2.7182818284, width=5, prec=2)
+    old_result = '%*.*f' % (5, 2, 2.7182,)
+    new_result = '{:{width}.{prec}f}'.format(2.7182, width=5, prec=2)
 
     assert old_result == new_result
     assert new_result == " 2.72"
@@ -446,7 +446,7 @@ def test_param_prec_2():
     spec, so the precision example above could be rewritten as:
     """
 
-    new_result = '{:{prec}} = {:{prec}}'.format('Gibberish', 2.7182818284, prec='.3')
+    new_result = '{:{prec}} = {:{prec}}'.format('Gibberish', 2.7182, prec='.3')
 
     assert new_result == 'Gib = 2.72'  # output
 
@@ -457,8 +457,9 @@ def test_param_date():
     """
 
     from datetime import datetime
+    dt = datetime(2001, 2, 3, 4, 5)
 
-    new_result = '{:{dfmt} {tfmt}}'.format(datetime(2001, 2, 3, 4, 5), dfmt='%Y-%m-%d', tfmt='%H:%M')
+    new_result = '{:{dfmt} {tfmt}}'.format(dt, dfmt='%Y-%m-%d', tfmt='%H:%M')
 
     assert new_result == '2001-02-03 04:05'  # output
 
