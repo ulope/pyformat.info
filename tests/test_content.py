@@ -121,21 +121,6 @@ def test_string_pad_align_2():
     assert old_result == 'test      '  # output
 
 
-def test_string_variable_pad_align():
-    """
-    By argument:
-
-    In the previous example, the value '10' is encoded as part of the format
-    string.  However, it is possible to also supply such values as an
-    argument.
-    """
-    old_result = '%*s' % (-8, 'test')
-    new_result = '{:<{}s}'.format('test', 8)
-
-    assert old_result == new_result
-    assert old_result == 'test    '  # output
-
-
 def test_string_pad_align_3():
     """
     Again, new style formatting surpasses the old variant by providing more
@@ -175,17 +160,6 @@ def test_string_truncating():
 
     assert old_result == new_result
     assert old_result == 'xylop'  # output
-
-
-def test_string_truncate_2():
-    """
-    By argument:
-    """
-    old_result = '%.*s' % (7, 'xylophone', )
-    new_result = '{:.{}}'.format('xylophone', 7)
-
-    assert old_result == new_result
-    assert old_result == 'xylopho'  # output
 
 
 def test_string_trunc_pad():
@@ -410,7 +384,7 @@ def test_datetime():
     """
     # Datetime
 
-    Additionally new style formatting allows objects to control their own
+    New style formatting also allows objects to control their own
     rendering. This for example allows datetime objects to be formatted inline:
     """
 
@@ -419,6 +393,77 @@ def test_datetime():
     new_result = '{:%Y-%m-%d %H:%M}'.format(datetime(2001, 2, 3, 4, 5))
 
     assert new_result == '2001-02-03 04:05'  # output
+
+
+def test_param_align():
+    """
+    # Parametrized formats
+
+    Additionally, new style formatting allows all of the components of
+    the format to be specified dynamically using parametrization. Parametrized
+    formats are nested expressions in braces that can appear anywhere in the
+    parent format after the colon.
+
+    Dynamically select alignment:
+    """
+
+    new_result = '{:{align}{width}}'.format('test', align='^', width='10')
+
+    assert new_result == '   test   '  # output
+
+
+def test_param_prec():
+    """
+    Dynamically selected precision:
+    """
+
+    new_result = '{:.{prec}} = {:.{prec}}'.format('Gibberish', 2.7182818284, prec=3)
+
+    assert new_result == 'Gib = 2.72'  # output
+
+
+def test_param_prec_2():
+    """
+    The nested format can be used to replace *any* part of the format
+    spec, so the precision example above could be rewritten as:
+    """
+
+    new_result = '{:{prec}} = {:{prec}}'.format('Gibberish', 2.7182818284, prec='.3')
+
+    assert new_result == 'Gib = 2.72'  # output
+
+
+def test_param_date():
+    """
+    The components of a date-time can be set separately:
+    """
+
+    from datetime import datetime
+
+    new_result = '{:{dfmt} {tfmt}}'.format(datetime(2001, 2, 3, 4, 5), dfmt='%Y-%m-%d', tfmt='%H:%M')
+
+    assert new_result == '2001-02-03 04:05'  # output
+
+
+def test_param_order_1():
+    """
+    The nested formats can be positional arguments. Position depends
+    on the order of the opening curly braces:
+    """
+
+    new_result = '{:{}{}{}.{}}'.format(2.7182818284, '>', '+', 10, 3)
+
+    assert new_result == '     +2.72'  # output
+
+
+def test_param_order_2():
+    """
+    And of course keyword arguments can be added to the mix as before:
+    """
+
+    new_result = '{:{}{sign}{}.{}}'.format(2.7182818284, '>', 10, 3, sign='+')
+
+    assert new_result == '     +2.72'  # output
 
 
 def test_custom_1():
