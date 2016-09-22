@@ -1,0 +1,34 @@
+_model: example
+---
+title: title
+---
+availability: py27
+---
+examples:
+
+#### code_block ####
+type: setup
+----
+code:
+
+setup()
+def multiline():
+    pass
+#### code_block ####
+type: mod
+----
+code: % code
+#### code_block ####
+type: format
+----
+code: format code
+#### code_block ####
+type: fstr
+----
+code: fstr code
+#### result_block ####
+result: result
+---
+intro: intro
+---
+sort: 42

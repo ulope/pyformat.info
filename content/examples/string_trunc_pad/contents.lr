@@ -1,0 +1,25 @@
+_model: example
+---
+title: Combining truncating and padding
+---
+examples:
+
+#### example_block ####
+description: It is also possible to combine truncating and padding:
+----
+availability: py27
+----
+examples:
+
+##### code_block_mod #####
+code: '%-10.5s' % ('xylophone',)
+##### code_block_format #####
+code: '{:10.5}'.format('xylophone')
+##### code_block_fstr #####
+code: f'{"xylophone":10.5}'
+##### result_block #####
+result:
+
+xylop     
+---
+sort: 5

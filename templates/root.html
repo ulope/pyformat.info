@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block title %}{{ this.title }} - {{ super() }}{% endblock %}
+{% block body %}
+    <section id="teaser">
+        {{ this.intro }}
+    </section>
+    {% for page in site.get('/examples').children.all() recursive %}
+        {% if page.title %}
+            <h2>{{ page.title }}</h2>
+        {% endif %}
+        {% for example_block in page.examples.blocks %}
+            {{ example_block }}
+        {% endfor %}
+        {% if page.children %}
+            {{ loop(page.children) }}
+        {% endif %}
+    {% endfor %}
+    <footer>
+        {{ this.footer }}
+    </footer>
+{% endblock %}

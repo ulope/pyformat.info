@@ -1,0 +1,85 @@
+_model: example
+---
+title: Getitem and Getattr
+---
+examples:
+
+#### example_block ####
+description:
+
+New style formatting allows even greater flexibility in accessing nested
+data structures.
+
+It supports accessing containers that support `__getitem__` like for
+example dictionaries and lists:
+----
+availability: py27
+----
+examples:
+
+##### code_block_setup #####
+code: person = {'first': 'Jean-Luc', 'last': 'Picard'}
+##### code_block_format #####
+code: '{p[first]} {p[last]}'.format(p=person)
+##### code_block_fstr #####
+code: f'{person["first"]} {person["last"]}'
+##### result_block #####
+result: Jean-Luc Picard
+#### example_block ####
+description: 
+----
+availability: py27
+----
+examples:
+
+##### code_block_setup #####
+code: data = [4, 8, 15, 16, 23, 42]
+##### code_block_format #####
+code: '{d[4]} {d[5]}'.format(d=data)
+##### code_block_fstr #####
+code: f'{data[4]} {data[5]}'
+##### result_block #####
+result: 23 42
+#### example_block ####
+description: As well as accessing attributes on objects via `getattr()`:
+----
+availability: py27
+----
+examples:
+
+##### code_block_setup #####
+code:
+
+class Plant(object):
+    type = 'tree'
+
+plant = Plant()
+##### code_block_format #####
+code: '{p.type}'.format(p=plant)
+##### code_block_fstr #####
+code: f'{plant.type}'
+##### result_block #####
+result: tree
+#### example_block ####
+description: Both type of access can be freely mixed and arbitrarily nested:
+----
+availability: py27
+----
+examples:
+
+##### code_block_setup #####
+code:
+
+class Plant(object):
+    type = 'tree'
+    kinds = [{'name': 'oak'}, {'name': 'maple'}]
+
+plant = Plant()
+##### code_block_format #####
+code: '{p.type}: {p.kinds[0][name]}'.format(p=plant)
+##### code_block_fstr #####
+code: f'{plant.type}: {plant.kinds[0]["name"]}'
+##### result_block #####
+result: tree: oak
+---
+sort: 10

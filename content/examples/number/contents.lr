@@ -1,0 +1,46 @@
+_model: example
+---
+title: Numbers
+---
+examples:
+
+#### example_block ####
+description:
+
+Of course it is also possible to format numbers.
+
+Integers:
+----
+availability: py27
+----
+examples:
+
+##### code_block_setup #####
+code: the_answer = 42
+##### code_block_mod #####
+code: '%d' % (the_answer,)
+##### code_block_format #####
+code: '{:d}'.format(the_answer)
+##### code_block_fstr #####
+code: f'{the_answer:d}'
+##### result_block #####
+result: 42
+#### example_block ####
+description: Floats:
+----
+availability: py27
+----
+examples:
+
+##### code_block_setup #####
+code: pi = 3.141592653589793
+##### code_block_mod #####
+code: '%f' % (pi,)
+##### code_block_format #####
+code: '{:f}'.format(pi)
+##### code_block_fstr #####
+code: f'{pi:f}'
+##### result_block #####
+result: 3.141593
+---
+sort: 6

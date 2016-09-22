@@ -1,0 +1,73 @@
+_model: example
+---
+title: Signed numbers
+---
+examples:
+
+#### example_block ####
+description:
+
+By default only negative numbers are prefixed with a sign. This can be
+changed of course.
+----
+availability: py27
+----
+examples:
+
+##### code_block_setup #####
+code: the_answer = 42
+##### code_block_mod #####
+code: '%+d' % (the_answer,)
+##### code_block_format #####
+code: '{:+d}'.format(the_answer)
+##### code_block_fstr #####
+code: f'{the_answer:+d}'
+##### result_block #####
+result: +42
+#### example_block ####
+description:
+
+Use a space character to indicate that negative numbers should be prefixed
+with a minus symbol and a leading space should be used for positive ones.
+----
+availability: py27
+----
+examples:
+
+##### code_block_mod #####
+code: '% d' % ((- 23),)
+##### code_block_format #####
+code: '{: d}'.format((- 23))
+##### result_block #####
+result: -23
+#### example_block ####
+description: 
+----
+availability: py27
+----
+examples:
+
+##### code_block_mod #####
+code: '% d' % (42,)
+##### code_block_format #####
+code: '{: d}'.format(42)
+##### result_block #####
+result:
+
+ 42
+#### example_block ####
+description:
+
+New style formatting is also able to control the position of the sign
+symbol relative to the padding.
+----
+availability: py27
+----
+examples:
+
+##### code_block_format #####
+code: '{:=5d}'.format((- 23))
+##### result_block #####
+result: -  23
+---
+sort: 8

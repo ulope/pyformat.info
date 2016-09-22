@@ -1,1 +1,4 @@
--e .
+git+https://github.com/lektor/lektor.git
+pygments==2.1.3
+libsass==0.11.1
+pytest==3.0.2

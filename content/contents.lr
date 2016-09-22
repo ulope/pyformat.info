@@ -1,0 +1,18 @@
+_model: root
+---
+footer:
+
+If you enjoy this kind of "single serve" reference page you might also like the [Python .strftime() reference](http://strftime.org) by [Will McCutchen](https://twitter.com/mccutchen).
+
+Curated by [Ulrich Petri](https://twitter.com/ulope) & [Horst Gutmann](https://zerokspot.com)
+
+Version: [{{ version.revid }}](https://github.com/ulope/pyformat.info/tree/{{ version.revid }}) (built at {{ version.datetime }})
+---
+intro:
+
+Python has had awesome string formatters for many years but the documentation on them is far too theoretic and technical.
+
+With this site we try to show you the most common use-cases covered by the [% (also called "mod")](https://docs.python.org/2/library/stdtypes.html#string-formatting) and [.format()](https://docs.python.org/3/library/string.html#string-formatting) style string formatting API with practical examples.
+All examples on this page are annotated to show which version of Python they work with. The big majority work with all "current" versions of Python - that is Python 2.7 and 3.2 - 3.6.
+
+If you want to contribute more examples, feel free to open an issue or create a pull-request on [GitHub](https://github.com/ulope/pyformat.info)!

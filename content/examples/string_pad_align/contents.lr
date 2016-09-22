@@ -1,0 +1,85 @@
+_model: example
+---
+title: Padding and aligning strings
+---
+examples:
+
+#### example_block ####
+description:
+
+By default values are formatted to take up only as many characters as
+needed to represent the content. It is however also possible to define that
+a value should be padded to a specific length.
+
+Unfortunately the default alignment differs between old and new style
+formatting. The old style defaults to right aligned while for new style
+it's left.
+
+Align right:
+----
+availability: py27
+----
+examples:
+
+##### code_block_mod #####
+code: '%10s' % ('test',)
+##### code_block_format #####
+code: '{:>10}'.format('test')
+##### code_block_fstr #####
+code: f'{"test":>10}'
+##### result_block #####
+result:
+
+      test
+#### example_block ####
+description: Align left:
+----
+availability: py27
+----
+examples:
+
+##### code_block_mod #####
+code: '%-10s' % ('test',)
+##### code_block_format #####
+code: '{:10}'.format('test')
+##### code_block_fstr #####
+code: f'{"test":10}'
+##### result_block #####
+result:
+
+test      
+#### example_block ####
+description:
+
+Again, new style formatting surpasses the old variant by providing more
+control over how values are padded and aligned.
+
+You are able to choose the padding character:
+----
+availability: py27
+----
+examples:
+
+##### code_block_format #####
+code: '{:_<10}'.format('test')
+##### code_block_fstr #####
+code: f'{"test":_<10}'
+##### result_block #####
+result: test______
+#### example_block ####
+description: And also center align values:
+----
+availability: py27
+----
+examples:
+
+##### code_block_format #####
+code: '{:^10}'.format('test')
+##### code_block_fstr #####
+code: f'{"test":^10}'
+##### result_block #####
+result:
+
+   test   
+---
+sort: 3

@@ -1,0 +1,70 @@
+_model: example
+---
+title: Value conversion
+---
+examples:
+
+#### example_block ####
+description:
+
+By default the new-style formatter calls the [`__format__()`][1]
+method of an object for its representation. If you just want to render the
+output of `str(...)` or `repr(...)` you can use the `!s` or `!r` conversion
+flags.
+
+In %-style you usually use `%s` for the string representation but there is
+`%r` for a `repr(...)` conversion.
+
+[1]: https://docs.python.org/3/reference/datamodel.html#object.__format__
+----
+availability: py27
+----
+examples:
+
+##### code_block_setup #####
+code:
+
+class Data(object):
+
+    def __str__(self):
+        return 'str'
+
+    def __repr__(self):
+        return 'repr'
+
+data = Data()
+##### code_block_mod #####
+code: '%s %r' % (data, data)
+##### code_block_format #####
+code: '{0!s} {0!r}'.format(data)
+##### code_block_fstr #####
+code: f'{data!s} {data!r}'
+##### result_block #####
+result: str repr
+#### example_block ####
+description:
+
+In Python 3 there exists an additional conversion flag that uses the output
+of `repr(...)` but uses `ascii(...)` instead.
+----
+availability: py33
+----
+examples:
+
+##### code_block_setup #####
+code:
+
+class Data(object):
+
+    def __repr__(self):
+        return 'räpr'
+
+data = Data()
+##### code_block_format #####
+code: '{0!r} {0!a}'.format(data)
+##### code_block_fstr #####
+code: f'{data!r} {data!a}'
+##### result_block #####
+result: räpr r\xe4pr
+---
+sort: 2

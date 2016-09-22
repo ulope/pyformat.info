@@ -1,0 +1,151 @@
+_model: example
+---
+title: Parametrized formats
+---
+examples:
+
+#### example_block ####
+description:
+
+Additionally, new style formatting allows all of the components of
+the format to be specified dynamically using parametrization. Parametrized
+formats are nested expressions in braces that can appear anywhere in the
+parent format after the colon.
+
+Old style formatting also supports some parametrization but is much more
+limited. Namely it only allows parametrization of the width and precision
+of the output.
+
+Parametrized alignment and width:
+----
+availability: py27
+----
+examples:
+
+##### code_block_format #####
+code:
+
+'{:{align}{width}}'.format('test', align='^', width='10')
+##### result_block #####
+result:
+
+   test   
+#### example_block ####
+description:
+
+Parametrized precision:
+----
+availability: py27
+----
+examples:
+
+##### code_block_mod #####
+code:
+
+'%.*s = %.*f' % (3, 'Gibberish', 3, 2.7182)
+##### code_block_format #####
+code:
+
+'{:.{prec}} = {:.{prec}f}'.format('Gibberish', 2.7182, prec=3)
+##### result_block #####
+result:
+
+Gib = 2.718
+#### example_block ####
+description:
+
+Width and precision:
+----
+availability: py27
+----
+examples:
+
+##### code_block_mod #####
+code:
+
+'%*.*f' % (5, 2, 2.7182)
+##### code_block_format #####
+code:
+
+'{:{width}.{prec}f}'.format(2.7182, width=5, prec=2)
+##### result_block #####
+result:
+
+ 2.72
+#### example_block ####
+description:
+
+The nested format can be used to replace *any* part of the format
+spec, so the precision example above could be rewritten as:
+----
+availability: py27
+----
+examples:
+
+##### code_block_format #####
+code:
+
+'{:{prec}} = {:{prec}}'.format('Gibberish', 2.7182, prec='.3')
+##### result_block #####
+result:
+
+Gib = 2.72
+#### example_block ####
+description:
+
+The components of a date-time can be set separately:
+----
+availability: py27
+----
+examples:
+
+##### code_block_setup #####
+code:
+
+from datetime import datetime
+dt = datetime(2001, 2, 3, 4, 5)
+##### code_block_format #####
+code:
+
+'{:{dfmt} {tfmt}}'.format(dt, dfmt='%Y-%m-%d', tfmt='%H:%M')
+##### result_block #####
+result:
+
+2001-02-03 04:05
+#### example_block ####
+description:
+
+The nested formats can be positional arguments. Position depends
+on the order of the opening curly braces:
+----
+availability: py27
+----
+examples:
+
+##### code_block_format #####
+code:
+
+'{:{}{}{}.{}}'.format(2.7182818284, '>', '+', 10, 3)
+##### result_block #####
+result:
+
+     +2.72
+#### example_block ####
+description:
+
+And of course keyword arguments can be added to the mix as before:
+----
+availability: py27
+----
+examples:
+
+##### code_block_format #####
+code:
+
+'{:{}{sign}{}.{}}'.format(2.7182818284, '>', 10, 3, sign='+')
+##### result_block #####
+result:
+
+     +2.72
+---
+sort: 12

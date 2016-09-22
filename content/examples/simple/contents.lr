@@ -1,0 +1,77 @@
+_model: example
+---
+title: Basic formatting
+---
+examples:
+
+#### example_block ####
+description:
+
+Simple positional formatting is probably the most common use-case. Use it
+if the order of your arguments is not likely to change and you only have
+very few elements you want to concatenate.
+
+Since the elements are not represented by something as descriptive as a
+name this simple style should only be used to format a relatively small
+number of elements.
+----
+availability: py27
+----
+examples:
+
+##### code_block_mod #####
+code:
+
+'%s %s' % ('one', 'two')
+##### code_block_format #####
+code:
+
+'{} {}'.format('one', 'two')
+##### result_block #####
+result:
+
+one two
+#### example_block ####
+description:
+
+
+----
+availability: py27
+----
+examples:
+
+##### code_block_mod #####
+code:
+
+'%d %d' % (1, 2)
+##### code_block_format #####
+code:
+
+'{} {}'.format(1, 2)
+##### result_block #####
+result:
+
+1 2
+#### example_block ####
+description:
+
+With new style formatting it is possible (and in Python 2.6 even mandatory)
+to give placeholders an explicit positional index.
+
+This allows for re-arranging the order of display without changing the
+arguments.
+----
+availability: py27
+----
+examples:
+
+##### code_block_format #####
+code:
+
+'{1} {0}'.format('one', 'two')
+##### result_block #####
+result:
+
+two one
+---
+sort: 1

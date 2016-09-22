@@ -1,0 +1,9 @@
+{% if this.description %}
+    <p>{{ this.description }}</p>
+{% endif %}
+<ul>
+    <li>{{ this.availability }}</li>
+</ul>
+{% for example_block in this.examples.blocks %}
+    {{ example_block }}
+{% endfor %}

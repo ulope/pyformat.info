@@ -1,0 +1,28 @@
+_model: example
+---
+title: test
+---
+examples:
+
+#### example_block ####
+description: The datetime example works through the use of the __format__() magic method. You can define custom format handling in your own objects by overriding this method. This gives you complete control over the format syntax used.
+----
+availability: py27
+----
+examples:
+
+##### code_block_setup #####
+code:
+
+class HAL9000(object):
+
+    def __format__(self, format):
+        if (format == 'open-the-pod-bay-doors'):
+            return "I'm afraid I can't do that."
+        return 'HAL 9000'
+##### code_block_format #####
+code: '{:open-the-pod-bay-doors}'.format(HAL9000())
+##### result_block #####
+result: I'm afraid I can't do that.
+---
+sort: 99

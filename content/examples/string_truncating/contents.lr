@@ -1,0 +1,30 @@
+_model: example
+---
+title: Truncating long strings
+---
+examples:
+
+#### example_block ####
+description:
+
+Inverse to padding it is also possible to truncate overly long values
+to a specific number of characters.
+
+The number behind a `.` in the format specifies the precision of the
+output. For strings that means that the output is truncated to the
+specified length. In our example this would be 5 characters.
+----
+availability: py27
+----
+examples:
+
+##### code_block_mod #####
+code: '%.5s' % ('xylophone',)
+##### code_block_format #####
+code: '{:.5}'.format('xylophone')
+##### code_block_fstr #####
+code: f'{"xylophone":.5}'
+##### result_block #####
+result: xylop
+---
+sort: 4

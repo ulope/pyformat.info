@@ -1,0 +1,36 @@
+_model: example
+---
+title: Named placeholders
+---
+examples:
+
+#### example_block ####
+description: Both formatting styles support named placeholders.
+----
+availability: py27
+----
+examples:
+
+##### code_block_setup #####
+code: data = {'first': 'Hodor', 'last': 'Hodor!'}
+##### code_block_mod #####
+code: '%(first)s %(last)s' % data
+##### code_block_format #####
+code: '{first} {last}'.format(**data)
+##### code_block_fstr #####
+code: f'{data["first"]} {data["last"]}'
+##### result_block #####
+result: Hodor Hodor!
+#### example_block ####
+description: `.format()` also accepts keyword arguments.
+----
+availability: py27
+----
+examples:
+
+##### code_block_format #####
+code: '{first} {last}'.format(first='Hodor', last='Hodor!')
+##### result_block #####
+result: Hodor Hodor!
+---
+sort: 9

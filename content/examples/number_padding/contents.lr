@@ -1,0 +1,71 @@
+_model: example
+---
+title: Padding numbers
+---
+examples:
+
+#### example_block ####
+description: Similar to strings numbers can also be padded or constrained to a specific width.
+----
+availability: py27
+----
+examples:
+
+##### code_block_setup #####
+code: the_answer = 42
+##### code_block_mod #####
+code: '%4d' % (the_answer,)
+##### code_block_format #####
+code: '{:4d}'.format(the_answer)
+##### code_block_fstr #####
+code: f'{the_answer:4d}'
+##### result_block #####
+result:
+
+  42
+#### example_block ####
+description:
+
+Again similar to truncating strings the precision for floating point
+numbers limits the number of positions after the decimal point.
+
+For floating point values the padding value represents the length of the complete
+output. In the example below we want our output to have at least 6
+characters with 2 digits after the decimal point.
+----
+availability: py27
+----
+examples:
+
+##### code_block_setup #####
+code: pi = 3.141592653589793
+##### code_block_mod #####
+code: '%06.2f' % (pi,)
+##### code_block_format #####
+code: '{:06.2f}'.format(pi)
+##### code_block_fstr #####
+code: f'{pi:06.2f}'
+##### result_block #####
+result: 003.14
+#### example_block ####
+description:
+
+For integer values providing a precision doesn't make much sense and is
+actually forbidden in the new style (it will result in a ValueError).
+----
+availability: py27
+----
+examples:
+
+##### code_block_setup #####
+code: the_answer = 42
+##### code_block_mod #####
+code: '%04d' % (the_answer,)
+##### code_block_format #####
+code: '{:04d}'.format(the_answer)
+##### code_block_fstr #####
+code: f'{the_answer:04d}'
+##### result_block #####
+result: 0042
+---
+sort: 7

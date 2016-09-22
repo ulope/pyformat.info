@@ -1,0 +1,30 @@
+_model: example
+---
+title: Datetime
+---
+examples:
+
+#### example_block ####
+description:
+
+New style formatting also allows objects to control their own
+rendering. This for example allows datetime objects to be formatted inline:
+----
+availability: py27
+----
+examples:
+
+##### code_block_setup #####
+code:
+
+from datetime import datetime
+
+dt = datetime(2001, 2, 3, 4, 5)
+##### code_block_format #####
+code: '{:%Y-%m-%d %H:%M}'.format(dt)
+##### code_block_fstr #####
+code: f'{dt:%Y-%m-%d %H:%M}'
+##### result_block #####
+result: 2001-02-03 04:05
+---
+sort: 11

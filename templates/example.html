@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block title %}{{ this.title }}{% endblock %}
+{% block body %}
+    {% if this.title %}
+        <h2>{{ this.title }}</h2>
+    {% endif %}
+    {% for example_block in this.examples.blocks %}
+        {{ example_block }}
+    {% endfor %}
+{% endblock %}
