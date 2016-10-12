@@ -1,3 +1,14 @@
+# Bevelopment branch for "Version 2"
+
+This is the development branch `v2` vor the "Version 2" of pyformat.info.
+We're migrating the page to use [Lektor](https://getlektor.com). Therefore 
+the description below is no longer accurate. More information on the new 
+structure will be added in the next weeks / months.
+
+The current plan is for this migration to be finished somewhere around the 
+beginning of 2017. But - no promises :)
+
+
 # PyFormat.info: Using % and .format() for great good!
 
 With this project @ulope and @zerok wanted to document Python's awesome string
