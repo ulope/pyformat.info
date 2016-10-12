@@ -6,5 +6,5 @@ python:
   - "3.4"
   - "3.5"
 install:
-  - pip install -r requirements.txt
-script: py.test tests/test_content.py
+  - pip install tox
+script: "tox -e ${TRAVIS_PYTHON_VERSION/[0-9].[0-9]/py${TRAVIS_PYTHON_VERSION/.}}"
