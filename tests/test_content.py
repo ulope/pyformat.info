@@ -83,7 +83,7 @@ def test_ascii_conversion():
         def __repr__(self):
             return 'räpr'
 
-    old_result = '%s %a' % (Data(), Data())
+    old_result = '%r %a' % (Data(), Data())
     new_result = '{0!r} {0!a}'.format(Data())
 
     assert new_result == 'räpr r\\xe4pr'  # output
