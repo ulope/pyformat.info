@@ -144,6 +144,17 @@ def test_string_pad_align_4():
     assert new_result == '   test   '  # output
 
 
+def test_string_pad_align_4():
+    """
+    If the total width of the padding is odd, the extra padding will be
+    placed on the right.
+    """
+
+    new_result = '{:^6}'.format('zip')
+
+    assert new_result == ' zip  '  # output
+
+
 def test_string_truncating():
     """
     # Truncating long strings
