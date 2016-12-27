@@ -294,6 +294,12 @@ def test_number_sign_4():
     assert new_result == '-  23'  # output
 
 
+def test_number_sign_5():
+    new_result = '{:=+5d}'.format(23)
+
+    assert new_result == '+  23'  # output
+
+
 def test_named_placeholders():
     """
     # Named placeholders
