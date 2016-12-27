@@ -148,8 +148,9 @@ def test_string_pad_align_4():
 
 def test_string_pad_align_5():
     """
-    If the total width of the padding is odd, the extra padding will be
-    placed on the right.
+    When using center alignment where the length of the string leads to an 
+    uneven split of the padding characters the extra character will be placed 
+    on the right side:
     """
 
     new_result = '{:^6}'.format('zip')
