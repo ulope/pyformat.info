@@ -67,7 +67,22 @@ examples:
 
 ##### code_block_format #####
 code: '{:=5d}'.format((- 23))
+##### code_block_fstr #####
+code: f'{-23:=5d}'
 ##### result_block #####
 result: -  23
+#### example_block ####
+description: 
+----
+availability: py27
+----
+examples:
+
+##### code_block_format #####
+code: '{:=+5d}'.format(23)
+##### code_block_fstr #####
+code: f'{23:=+5d}'
+##### result_block #####
+result: +  23
 ---
 sort: 8

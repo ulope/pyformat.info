@@ -81,5 +81,20 @@ code: f'{"test":^10}'
 result:
 
    test   
+#### example_block ####
+description: When using center alignment where the length of the string leads to an uneven split of the padding characters the extra character will be placed on the right side:
+----
+availability: py27
+----
+examples:
+
+##### code_block_format #####
+code: '{:^6}'.format('zip')
+##### code_block_fstr #####
+code: f'{"zip":^6}'
+##### result_block #####
+result:
+
+ zip  
 ---
 sort: 3

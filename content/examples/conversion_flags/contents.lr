@@ -60,6 +60,8 @@ class Data(object):
         return 'räpr'
 
 data = Data()
+##### code_block_mod #####
+code: '%r %a' % (data, data)
 ##### code_block_format #####
 code: '{0!r} {0!a}'.format(data)
 ##### code_block_fstr #####
