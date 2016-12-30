@@ -1,10 +1,17 @@
 language: python
+
 sudo: false
+
 python:
   - "2.7"
   - "3.3"
   - "3.4"
   - "3.5"
+
+cache: pip
+
 install:
   - pip install tox
-script: "tox -e ${TRAVIS_PYTHON_VERSION/[0-9].[0-9]/py${TRAVIS_PYTHON_VERSION/.}}"
+
+script:
+  - "tox -e ${TRAVIS_PYTHON_VERSION/[0-9].[0-9]/py${TRAVIS_PYTHON_VERSION/.}}"
