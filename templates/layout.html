@@ -8,7 +8,9 @@
         <!--[if lt IE 9]>
           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.1.1/gh-fork-ribbon.ie.min.css" />
         <![endif]-->
-        <link rel="stylesheet" href="{{ '/static/style.css'|url }}">
+        {% for css_file in css_files %}
+            <link rel="stylesheet" href="{{ '/static/css/' ~ css_file |url }}">
+        {% endfor %}
     </head>
     <body>
         <div class="github-fork-ribbon-wrapper right">
