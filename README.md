@@ -8,6 +8,15 @@ see the new and old style of formatting side-by-side and provide even more
 practical examples.
 
 
+## Version 2
+
+We're curently working on [version 2](https://github.com/ulope/pyformat.info/tree/v2) 
+of the site. This encompases a complete architecture change to use [Lektor](https://getlektor.com)
+to generate the site instead of the previous homegrown approach.
+
+The plan is currently to finish this migration in the first half of 2017.
+
+
 ## What is Where?
 
 The website you can find on https://pyformat.info is statically generated using
