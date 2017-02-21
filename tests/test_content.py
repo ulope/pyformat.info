@@ -524,3 +524,27 @@ def test_custom_1():
     new_result = '{:open-the-pod-bay-doors}'.format(HAL9000())
 
     assert new_result == "I'm afraid I can't do that."  # output
+
+
+def my_staircase():
+"""
+    # Staircase
+
+    This example prints to the screen a staircase that goes from down left to up right.
+    The user defines how big they want the staircase to be and the program prints sufficient blank spaces in front of the
+    correct amount of hashtag keys(#). This formatting works for all staircase lengths as provided bu user.
+    """
+    
+    # by changing the integer n, the user can make the staircase bigger or smaller
+    #n = int(raw_input().strip())
+    n = 10
+    
+    #old format
+    for i in range(1,n+1):
+        print " "*(n-i) + "#"*i
+    
+    #new format
+    staircase = []
+    for i in range(0,n):
+        staircase = n * "#"
+        print '{:>{}s}'.format(staircase[0:i+1], n)
