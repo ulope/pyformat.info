@@ -260,6 +260,24 @@ def test_number_padding_3():
     assert old_result == '0042'  # output
 
 
+def test_number_commas():
+    """
+    # Commas in numbers
+
+    Comma can also be added to numbers to improve readability.
+    """
+    new_result = '{:,}'.format(8765.4321)
+    assert new_result == '8,765.4321'  # output
+
+
+def test_number_commas_2():
+    """
+    Commas can also format numbers for currency.
+    """
+    new_result = '${:,.2f}'.format(8765.4321)
+    assert new_result == '$8,765.43'  # output
+
+
 def test_number_sign():
     """
     # Signed numbers
