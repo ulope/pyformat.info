@@ -335,6 +335,7 @@ def test_named_placeholders_2():
     `.format()` also accepts keyword arguments.
     """
 
+    old_result = '%(first)s %(last)s' % dict(first="Hodor", last="Hodor!")
     new_result = '{first} {last}'.format(first="Hodor", last="Hodor!")
 
     assert new_result == 'Hodor Hodor!'  # output
