@@ -2,11 +2,11 @@ _model: root
 ---
 footer:
 
-If you enjoy this kind of "single serve" reference page you might also like the [Python .strftime() reference](http://strftime.org) by [Will McCutchen](https://twitter.com/mccutchen).
-
 Curated by [Ulrich Petri](https://twitter.com/ulope) & [Horst Gutmann](https://zerokspot.com)
 
 Version: [{{ version.revid }}](https://github.com/ulope/pyformat.info/tree/{{ version.revid }}) (built at {{ version.datetime }})
+
+If you enjoy this kind of "single serve" reference page you might also like the [Python .strftime() reference](http://strftime.org) by [Will McCutchen](https://twitter.com/mccutchen).
 ---
 intro:
 
