@@ -8,6 +8,12 @@ structure will be added in the next weeks / months.
 The current plan is for this migration to be finished somewhen in the first
 half of 2017. But - no promises :)
 
+## Dev setup:
+
+* Create Python 3.6 virtualenv
+* `pip install fabric3`
+* `fab sync`
+
 
 # PyFormat.info: Using % and .format() for great good!
 
