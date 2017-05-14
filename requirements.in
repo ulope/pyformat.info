@@ -1,0 +1,5 @@
+-e vendor/lektor
+fabric3
+pathlib ; python_version < '3.4'
+pre-commit
+pytest
