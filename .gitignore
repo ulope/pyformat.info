@@ -7,3 +7,5 @@ index.html
 htmlcov
 tests/fixtures/css/sass/_pygments.scss
 assets_src/sass/_pygments.scss
+assets/
+

@@ -5,7 +5,6 @@ from pathlib import Path
 import pygments
 import sass
 from lektor.pluginsystem import Plugin
-from pygments.formatters.html import HtmlFormatter
 
 log = getLogger(__name__)
 
@@ -15,9 +14,12 @@ class SassCompilerPlugin(Plugin):
     description = u'Add your description here.'
 
     def on_before_build_all(self, builder, **extra):
-        print("on before build")
+        log.info("Compiling CSS")
         root = Path(self.env.root_path)
-        css_map = generate_css(root.joinpath('assets_src', 'sass'), root.joinpath('assets', 'static', 'css'))
+        css_map = generate_css(
+            root.joinpath('assets_src', 'sass'),
+            root.joinpath('assets', 'static', 'css')
+        )
 
         self.env.jinja_env.globals.update(
             css_files=list(css_map.values())
@@ -49,7 +51,6 @@ def generate_css(base_folder, target_folder):
 
 def compile_sass(source_path, target_path_pattern):
     # First generate the content from which we can generate the hashname
-    log.info("Compiling SCSS.")
     output = sass.compile(
         filename=str(source_path),
         output_style='compressed')
