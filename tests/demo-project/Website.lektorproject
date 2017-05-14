@@ -1,0 +1,24 @@
+[project]
+name = Demo Project
+excluded_assets = foo*
+included_assets = _*
+
+[alternatives.en]
+name = English
+name[de] = Englisch
+primary = yes
+
+[alternatives.de]
+name = German
+name[de] = Deutsch
+url_prefix = /de/
+
+[servers.production]
+enabled = yes
+name = Production
+target = rsync://myserver.com/path/to/website
+name[de] = Produktion
+extra_field = extra_value
+
+[attachment_types]
+.foo = text
