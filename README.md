@@ -1,21 +1,14 @@
 # Development branch for "Version 2"
 
-This is the development branch `v2` vor the "Version 2" of pyformat.info.
-We're migrating the page to use [Lektor](https://getlektor.com). Therefore 
-the description below is no longer accurate. More information on the new 
-structure will be added in the next weeks / months.
+This is the development branch `v2` for "Version 2" of pyformat.info.  We're
+currently migrating the page to use [Lektor][]. Therefore
+the description below may not be completely accurate anymore.
 
 The current plan is for this migration to be finished somewhen in the first
-half of 2017. But - no promises :)
-
-## Dev setup:
-
-* Create Python 3.6 virtualenv
-* `pip install fabric3`
-* `fab sync`
+second of 2017. But - no promises :)
 
 
-# PyFormat.info: Using % and .format() for great good!
+# PyFormat.info: Using %, f-strings, and .format() for great good!
 
 With this project @ulope and @zerok wanted to document Python's awesome string
 formatting system with practical examples. While the official documentation on
@@ -27,46 +20,38 @@ practical examples.
 
 ## What is Where?
 
-The website you can find on https://pyformat.info is statically generated using
-the `main.py`. This script parses the test cases specified in
-`tests/test_content.py` which is more or less where all the content of the
-final site comes from.
+The website you can find on https://pyformat.info is statically generated
+using [Lektor][]. All examples are sub-pages of the `examples` page and consist
+of one or multiple code-blocks providing the %, .format, or f-string syntax for
+a specific use-case.
 
-Each test case can consist of following elements:
+All the examples can be automatically tested using [tox][]:
 
-* A optional title which is encoded as the first line of the docstring prefixed
-  with a `# `
-* A short description on what is going on in the example which is what the rest
-  of the docstring is used for
-* A value computation for the old-style formatter which is assigned to a
-  variable called `old_result`
-* A value computation for the new-style formatter which is assigned to a
-  variable called `new_result`
-* A handful of assertions. The last one that has a string on the right side is
-  used as output on the website.
-* An optional setup section that is placed after the docstring and before the
-  `old_result` asignment
+```
+$ tox
+```
 
-If no `old_result` is provided this indicates that the feature is only
-available for the new formatting style and an appropriate message is rendered
-on the website.
+
+## Development setup
+
+* Create a Python 3.6 virtualenv
+* `pip install fabric3`
+* `fab sync`
+
+Now, you can execute `lektor` directly from your virtualenv in order to build
+the website or start the development server.
 
 
 ## How to Contribute
 
-If you have another awesome example of what can be done with Python's
-formatters please create a new test-case in `tests/test_content.py` including a
-short info message about what is going on there as the docstring.
+If you have another awesome example of what can be done with Python's formatters
+please create a `examples` subpage with all the formatting variants you want to
+cover. Please also include a short summary describing why this example is
+interesting.
 
 Once you have that, simply open a pull-request! Please make sure that you code
-is PEP8-compliant (except for the line length).
+is PEP8-compliant and that all tests are still passing.
 
 
-## Running the tests
-
-We use [`py.test`](http://pytest.org) to both test the functionality of the script
-generating the static HTML output as well as ensuring that the examples on the
-page are syntactically correct and produce the desired output.
-
-The easiest way to run the tests on all supported Python versions is by using
-[`tox`](http://tox.testrun.org) for which this repository contains a configuration file.
+[tox]: http://tox.testrun.org
+[lektor]: https://getlektor.com
