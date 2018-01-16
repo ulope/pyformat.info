@@ -22,7 +22,7 @@ jobs:
       - checkout
       - run:
           name: create virtualenv
-          command: [ -x "$(command -v virtualenv)" ] && virtualenv ../venv || python -m venv ../venv
+          command: '[ -x "$(command -v virtualenv)" ] && virtualenv ../venv || python -m venv ../venv'
       - restore_cache:
           key: test-deps-{{ .Branch }}-{{ checksum "requirements.txt" }}-{{ checksum "../venv/bin/python" }}
       - run:
