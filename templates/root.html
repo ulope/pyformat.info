@@ -4,9 +4,17 @@
     <section id="teaser">
         {{ this.intro }}
     </section>
+    <section id="toc">
+        <h2>Tabel of Contents:</h2>
+        <ol>
+            {% for page in site.get('/examples').children.all() recursive %}
+                <li><a href="#{{ page._slug }}">{{ page.title }}</a></li>
+            {% endfor %}    
+        </ol>
+    </section>
     {% for page in site.get('/examples').children.all() recursive %}
         {% if page.title %}
-            <h2>{{ page.title }}</h2>
+            <h2 id="{{ page._slug }}">{{ page.title }}</h2>
         {% endif %}
         {% for example_block in page.examples.blocks %}
             {{ example_block }}
