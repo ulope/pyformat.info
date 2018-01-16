@@ -25,7 +25,7 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            python -m venv ../venv
+            [ -x "$(command -v virtualenv)" ] && virtualenv ../venv || python -m venv ../venv
             . ../venv/bin/activate
             pip install pip-tools
             pip-sync requirements.txt
