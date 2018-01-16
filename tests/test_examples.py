@@ -1,5 +1,4 @@
 import pytest
-from lektor.db import F
 from lektor.project import Project
 
 
@@ -29,9 +28,14 @@ def pytest_generate_tests(metafunc):
                     if 'code_block_' in example.flowblockmodel.id
                 }
                 skipif = pytest.mark.skipif(
-                    "sys.version_info < ({}, {})".format(*example_block['availability'].strip('py')))
+                    "sys.version_info < ({}, {})".format(
+                        *example_block['availability'].strip('py')))
                 setup = blocks.get('setup', "")
-                result = next(b for b in example_block['examples'].blocks if 'result' in b)['result']
+                result = next(
+                    b for b
+                    in example_block['examples'].blocks
+                    if 'result' in b
+                )['result']
                 for block_type in ['mod', 'format', 'fstr']:
                     if block_type in blocks:
                         if block_type == 'fstr':

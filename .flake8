@@ -1,3 +1,4 @@
 [flake8]
 max-line-length = 99
 ignore = E402,W503
+exclude = vendor,packages,.travis
