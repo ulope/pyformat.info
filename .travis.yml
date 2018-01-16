@@ -16,4 +16,4 @@ install:
   - pip install tox
 
 script:
-  - "tox -e ${TRAVIS_PYTHON_VERSION/[0-9].[0-9]/py${TRAVIS_PYTHON_VERSION/.}} -- --verbose test_examples.py"
+  - "tox -e ${TRAVIS_PYTHON_VERSION/[0-9].[0-9]/py${TRAVIS_PYTHON_VERSION/.}} -- --verbose tests"
