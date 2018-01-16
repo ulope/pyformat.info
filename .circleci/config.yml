@@ -20,12 +20,14 @@ jobs:
       - image: circleci/python:2.7
     steps:
       - checkout
+      - run:
+          name: create virtualenv
+          command: [ -x "$(command -v virtualenv)" ] && virtualenv ../venv || python -m venv ../venv
       - restore_cache:
           key: test-deps-{{ .Branch }}-{{ checksum "requirements.txt" }}-{{ checksum "../venv/bin/python" }}
       - run:
           name: install dependencies
           command: |
-            [ -x "$(command -v virtualenv)" ] && virtualenv ../venv || python -m venv ../venv
             . ../venv/bin/activate
             pip install pip-tools
             pip-sync requirements.txt
