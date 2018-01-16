@@ -5,7 +5,7 @@ currently migrating the page to use [Lektor][]. Therefore
 the description below may not be completely accurate anymore.
 
 The current plan is for this migration to be finished somewhen in the first
-second of 2017. But - no promises :)
+half of 2018. But - no promises :)
 
 
 # PyFormat.info: Using %, f-strings, and .format() for great good!

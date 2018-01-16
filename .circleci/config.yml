@@ -59,6 +59,7 @@ jobs:
     docker:
       - image: circleci/python:3.6
 
+
 workflows:
   version: 2
   check-then-test:
