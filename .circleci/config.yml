@@ -1,0 +1,81 @@
+version: 2
+
+jobs:
+  check:
+    working_directory: ~/pyformat
+    docker:
+      - image: circleci/python:3.6
+    steps:
+      - checkout
+      - run:
+          name: install dependencies
+          command: pip install --user flake8 flake8-tuple
+      - run:
+          name: run flake8
+          command: ~/.local/bin/flake8
+
+  test-2.7: &test-template
+    working_directory: ~/pyformat
+    docker:
+      - image: circleci/python:2.7
+    steps:
+      - checkout
+      - restore_cache:
+          key: test-deps-{{ .Branch }}-{{ checksum "requirements.txt" }}-{{ checksum "../venv/bin/python" }}
+      - run:
+          name: install dependencies
+          command: |
+            python -m venv ../venv
+            . ../venv/bin/activate
+            pip install pip-tools
+            pip-sync requirements.txt
+      - save_cache:
+          paths:
+            - ../venv
+          key: test-deps-{{ .Branch }}-{{ checksum "requirements.txt" }}-{{ checksum "../venv/bin/python" }}
+      - run:
+          name: run tests
+          command: |
+            . ../venv/bin/activate
+            pytest tests
+
+  test-3.3:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.3
+
+  test-3.4:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.4
+
+  test-3.5:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.5
+
+  test-3.6:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.6
+
+workflows:
+  version: 2
+  check-then-test:
+    jobs:
+      - check
+      - test-2.7:
+          requires:
+            - check
+      - test-3.3:
+          requires:
+            - check
+      - test-3.4:
+          requires:
+            - check
+      - test-3.5:
+          requires:
+            - check
+      - test-3.6:
+          requires:
+            - check
