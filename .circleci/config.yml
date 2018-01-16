@@ -41,11 +41,6 @@ jobs:
             . ../venv/bin/activate
             pytest tests
 
-  test-3.3:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.3
-
   test-3.4:
     <<: *test-template
     docker:
@@ -68,9 +63,6 @@ workflows:
     jobs:
       - check
       - test-2.7:
-          requires:
-            - check
-      - test-3.3:
           requires:
             - check
       - test-3.4:
