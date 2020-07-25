@@ -260,6 +260,28 @@ def test_number_padding_3():
     assert old_result == '0042'  # output
 
 
+@pytest.mark.skipif(sys.version_info < (2, 7), reason="Requires Python 2.7")
+def test_number_separator():
+    """
+    String formatting allows thousands separators using commas.
+    This works for floating point and integer numbers.
+    """
+    new_result = '{:,}'.format(42042.042)
+
+    assert new_result == '42,042.042'
+
+
+@pytest.mark.skipif(sys.version_info < (3, 6), reason="Requires Python 3.6")
+def test_number_separator_2():
+    """
+    String formatting allows thousands separators using underscores.
+    This works for floating point and integer numbers.
+    """
+    new_result = '{:_}'.format(123456789)
+
+    assert new_result == '123_456_789'
+
+
 def test_number_sign():
     """
     # Signed numbers
