@@ -7,6 +7,12 @@ specification of the formatters and some examples, we felt it would be nice to
 see the new and old style of formatting side-by-side and provide even more
 practical examples.
 
+#f string
+we can also used a f string.
+syntax like as :
+a = 5
+f" value of A : {a} "
+
 
 ## Version 2
 
