@@ -10,7 +10,7 @@ practical examples.
 
 ## Version 2
 
-We're curently working on [version 2](https://github.com/ulope/pyformat.info/tree/v2) 
+We're currently working on [version 2](https://github.com/ulope/pyformat.info/tree/v2) 
 of the site. This encompases a complete architecture change to use [Lektor](https://getlektor.com)
 to generate the site instead of the previous homegrown approach.
 
