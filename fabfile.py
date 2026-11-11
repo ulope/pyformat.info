@@ -6,7 +6,7 @@ env.hosts = ['pyformat@pyformat.info']
 
 @task
 def generate():
-    local("pyformat generate")
+    local("uv run pyformat generate")
 
 
 @task(default=True)

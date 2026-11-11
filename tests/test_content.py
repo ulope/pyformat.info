@@ -1,7 +1,18 @@
-# -*- encoding: utf-8 -*-
 import sys
 
 import pytest
+
+
+def since(*version):
+    """
+    Mark an example as needing at least the given Python version.
+
+    The version is also shown as a badge next to the example on the page.
+    """
+    return pytest.mark.skipif(
+        sys.version_info < version,
+        reason="Needs Python {}+".format(".".join(map(str, version))),
+    )
 
 
 def test_simple():
@@ -15,79 +26,91 @@ def test_simple():
     Since the elements are not represented by something as descriptive as a
     name this simple style should only be used to format a relatively small
     number of elements.
-    """
-    old_result = '%s %s' % ('one', 'two', )
-    new_result = '{} {}'.format('one', 'two')
 
-    assert old_result == new_result
-    assert old_result == 'one two'  # output
+    f-strings don't have this problem: the values are written directly into
+    the placeholders.
+    """
+    a, b = 'one', 'two'
+
+    percent_result = '%s %s' % (a, b)
+    format_result = '{} {}'.format(a, b)
+    fstring_result = f'{a} {b}'
+
+    assert percent_result == format_result == fstring_result == 'one two'  # output
 
 
 def test_simple_2():
-    old_result = '%d %d' % (1, 2)
-    new_result = '{} {}'.format(1, 2)
+    a, b = 1, 2
 
-    assert old_result == new_result
-    assert new_result == "1 2"  # output
+    percent_result = '%d %d' % (a, b)
+    format_result = '{} {}'.format(a, b)
+    fstring_result = f'{a} {b}'
+
+    assert percent_result == format_result == fstring_result == '1 2'  # output
 
 
 def test_simple_3():
     """
-    With new style formatting it is possible (and in Python 2.6 even mandatory)
-    to give placeholders an explicit positional index.
+    With `.format()` it is possible to give placeholders an explicit
+    positional index. This allows for re-arranging the order of display
+    without changing the arguments.
 
-    This allows for re-arranging the order of display without changing the
-    arguments.
+    With f-strings you simply write the values in the order you want them.
     """
-    new_result = '{1} {0}'.format('one', 'two')
+    a, b = 'one', 'two'
 
-    assert new_result == 'two one'  # output
+    format_result = '{1} {0}'.format(a, b)
+    fstring_result = f'{b} {a}'
+
+    assert format_result == fstring_result == 'two one'  # output
 
 
 def test_conversion_flags():
     """
     # Value conversion
 
-    The new-style simple formatter calls by default the [`__format__()`][1]
-    method of an object for its representation. If you just want to render the
-    output of `str(...)` or `repr(...)` you can use the `!s` or `!r` conversion
-    flags.
+    `.format()` and f-strings call by default the [`__format__()`][1] method
+    of an object for its representation. If you just want to render the
+    output of `str(...)` or `repr(...)` you can use the `!s` or `!r`
+    conversion flags.
 
-    In %-style you usually use `%s` for the string representation but there is
-    `%r` for a `repr(...)` conversion.
+    In %-style you usually use `%s` for the string representation but there
+    is `%r` for a `repr(...)` conversion.
 
     [1]: https://docs.python.org/3/reference/datamodel.html#object.__format__
-
     """
-    class Data(object):
+    class Data:
         def __str__(self):
             return 'str'
 
         def __repr__(self):
             return 'repr'
 
-    old_result = '%s %r' % (Data(), Data())
-    new_result = '{0!s} {0!r}'.format(Data())
+    data = Data()
 
-    assert new_result == 'str repr'  # output
-    assert new_result == old_result
+    percent_result = '%s %r' % (data, data)
+    format_result = '{0!s} {0!r}'.format(data)
+    fstring_result = f'{data!s} {data!r}'
+
+    assert percent_result == format_result == fstring_result == 'str repr'  # output
 
 
-@pytest.mark.xfail(sys.version_info < (3,), reason="!a not available in Python 2")
 def test_ascii_conversion():
     """
-    In Python 3 there exists an additional conversion flag that uses the output
-    of `repr(...)` but uses `ascii(...)` instead.
+    There is also a conversion flag that uses the output of `ascii(...)`
+    instead of `repr(...)`, which escapes all non-ASCII characters:
     """
-    class Data(object):
+    class Data:
         def __repr__(self):
             return 'räpr'
 
-    old_result = '%r %a' % (Data(), Data())
-    new_result = '{0!r} {0!a}'.format(Data())
+    data = Data()
 
-    assert new_result == 'räpr r\\xe4pr'  # output
-    assert new_result == old_result
+    percent_result = '%r %a' % (data, data)
+    format_result = '{0!r} {0!a}'.format(data)
+    fstring_result = f'{data!r} {data!a}'
+
+    assert percent_result == format_result == fstring_result == 'räpr r\\xe4pr'  # output
 
 
 def test_string_pad_align():
@@ -98,64 +121,72 @@ def test_string_pad_align():
     needed to represent the content. It is however also possible to define that
     a value should be padded to a specific length.
 
-    Unfortunately the default alignment differs between old and new style
-    formatting. The old style defaults to right aligned while for new style
-    it's left.
+    Unfortunately the default alignment for strings differs: %-formatting
+    aligns them right, while `.format()` and f-strings align them left.
 
     Align right:
     """
-    old_result = '%10s' % ('test', )
-    new_result = '{:>10}'.format('test')
+    text = 'test'
 
-    assert old_result == new_result
-    assert old_result == '      test'  # output
+    percent_result = '%10s' % text
+    format_result = '{:>10}'.format(text)
+    fstring_result = f'{text:>10}'
+
+    assert percent_result == format_result == fstring_result == '      test'  # output
 
 
 def test_string_pad_align_2():
     """
     Align left:
     """
+    text = 'test'
 
-    old_result = '%-10s' % ('test', )
-    new_result = '{:10}'.format('test')
+    percent_result = '%-10s' % text
+    format_result = '{:10}'.format(text)
+    fstring_result = f'{text:10}'
 
-    assert old_result == new_result
-    assert old_result == 'test      '  # output
+    assert percent_result == format_result == fstring_result == 'test      '  # output
 
 
 def test_string_pad_align_3():
     """
-    Again, new style formatting surpasses the old variant by providing more
+    Again, `.format()` and f-strings surpass %-formatting by providing more
     control over how values are padded and aligned.
 
     You are able to choose the padding character:
     """
+    text = 'test'
 
-    new_result = '{:_<10}'.format('test')
+    format_result = '{:_<10}'.format(text)
+    fstring_result = f'{text:_<10}'
 
-    assert new_result == 'test______'  # output
+    assert format_result == fstring_result == 'test______'  # output
 
 
 def test_string_pad_align_4():
     """
     And also center align values:
     """
+    text = 'test'
 
-    new_result = '{:^10}'.format('test')
+    format_result = '{:^10}'.format(text)
+    fstring_result = f'{text:^10}'
 
-    assert new_result == '   test   '  # output
+    assert format_result == fstring_result == '   test   '  # output
 
 
 def test_string_pad_align_5():
     """
-    When using center alignment where the length of the string leads to an 
-    uneven split of the padding characters the extra character will be placed 
+    When using center alignment where the length of the string leads to an
+    uneven split of the padding characters the extra character will be placed
     on the right side:
     """
+    text = 'zip'
 
-    new_result = '{:^6}'.format('zip')
+    format_result = '{:^6}'.format(text)
+    fstring_result = f'{text:^6}'
 
-    assert new_result == ' zip  '  # output
+    assert format_result == fstring_result == ' zip  '  # output
 
 
 def test_string_truncating():
@@ -169,11 +200,13 @@ def test_string_truncating():
     output. For strings that means that the output is truncated to the
     specified length. In our example this would be 5 characters.
     """
-    old_result = '%.5s' % ('xylophone', )
-    new_result = '{:.5}'.format('xylophone')
+    text = 'xylophone'
 
-    assert old_result == new_result
-    assert old_result == 'xylop'  # output
+    percent_result = '%.5s' % text
+    format_result = '{:.5}'.format(text)
+    fstring_result = f'{text:.5}'
+
+    assert percent_result == format_result == fstring_result == 'xylop'  # output
 
 
 def test_string_trunc_pad():
@@ -182,12 +215,13 @@ def test_string_trunc_pad():
 
     It is also possible to combine truncating and padding:
     """
+    text = 'xylophone'
 
-    old_result = '%-10.5s' % ('xylophone', )
-    new_result = '{:10.5}'.format('xylophone')
+    percent_result = '%-10.5s' % text
+    format_result = '{:10.5}'.format(text)
+    fstring_result = f'{text:10.5}'
 
-    assert old_result == new_result
-    assert new_result == 'xylop     '  # output
+    assert percent_result == format_result == fstring_result == 'xylop     '  # output
 
 
 def test_number():
@@ -198,22 +232,26 @@ def test_number():
 
     Integers:
     """
-    old_result = '%d' % (42, )
-    new_result = '{:d}'.format(42)
+    number = 42
 
-    assert old_result == new_result
-    assert old_result == '42'  # output
+    percent_result = '%d' % number
+    format_result = '{:d}'.format(number)
+    fstring_result = f'{number:d}'
+
+    assert percent_result == format_result == fstring_result == '42'  # output
 
 
 def test_number_2():
     """
     Floats:
     """
-    old_result = '%f' % (3.141592653589793, )
-    new_result = '{:f}'.format(3.141592653589793)
+    pi = 3.141592653589793
 
-    assert old_result == new_result
-    assert old_result == '3.141593'  # output
+    percent_result = '%f' % pi
+    format_result = '{:f}'.format(pi)
+    fstring_result = f'{pi:f}'
+
+    assert percent_result == format_result == fstring_result == '3.141593'  # output
 
 
 def test_number_padding():
@@ -222,11 +260,13 @@ def test_number_padding():
 
     Similar to strings numbers can also be constrained to a specific width.
     """
-    old_result = '%4d' % (42, )
-    new_result = '{:4d}'.format(42)
+    number = 42
 
-    assert old_result == new_result
-    assert old_result == '  42'  # output
+    percent_result = '%4d' % number
+    format_result = '{:4d}'.format(number)
+    fstring_result = f'{number:4d}'
+
+    assert percent_result == format_result == fstring_result == '  42'  # output
 
 
 def test_number_padding_2():
@@ -238,26 +278,33 @@ def test_number_padding_2():
     output. In the example below we want our output to have at least 6
     characters with 2 after the decimal point.
     """
-    old_result = '%06.2f' % (3.141592653589793, )
-    new_result = '{:06.2f}'.format(3.141592653589793)
+    pi = 3.141592653589793
 
-    assert old_result == new_result
-    assert old_result == '003.14'  # output
+    percent_result = '%06.2f' % pi
+    format_result = '{:06.2f}'.format(pi)
+    fstring_result = f'{pi:06.2f}'
+
+    assert percent_result == format_result == fstring_result == '003.14'  # output
 
 
 def test_number_padding_3():
     """
     For integer values providing a precision doesn't make much sense and is
-    actually forbidden in the new style (it will result in a ValueError).
+    actually forbidden with `.format()` and f-strings (it will result in a
+    ValueError).
     """
-    old_result = '%04d' % (42, )
-    new_result = '{:04d}'.format(42)
+    number = 42
+
+    percent_result = '%04d' % number
+    format_result = '{:04d}'.format(number)
+    fstring_result = f'{number:04d}'
 
     with pytest.raises(ValueError):
-        '{:04.2d}'.format(42)
+        '{:04.2d}'.format(number)
+    with pytest.raises(ValueError):
+        f'{number:04.2d}'
 
-    assert old_result == new_result
-    assert old_result == '0042'  # output
+    assert percent_result == format_result == fstring_result == '0042'  # output
 
 
 def test_number_sign():
@@ -267,12 +314,13 @@ def test_number_sign():
     By default only negative numbers are prefixed with a sign. This can be
     changed of course.
     """
+    number = 42
 
-    old_result = '%+d' % (42, )
-    new_result = '{:+d}'.format(42)
+    percent_result = '%+d' % number
+    format_result = '{:+d}'.format(number)
+    fstring_result = f'{number:+d}'
 
-    assert old_result == new_result
-    assert old_result == '+42'  # output
+    assert percent_result == format_result == fstring_result == '+42'  # output
 
 
 def test_number_sign_2():
@@ -280,184 +328,377 @@ def test_number_sign_2():
     Use a space character to indicate that negative numbers should be prefixed
     with a minus symbol and a leading space should be used for positive ones.
     """
-    old_result = '% d' % (-23, )
-    new_result = '{: d}'.format(-23)
+    number = -23
 
-    assert old_result == new_result
-    assert old_result == '-23'  # output
+    percent_result = '% d' % number
+    format_result = '{: d}'.format(number)
+    fstring_result = f'{number: d}'
+
+    assert percent_result == format_result == fstring_result == '-23'  # output
 
 
 def test_number_sign_3():
-    old_result = '% d' % (42, )
-    new_result = '{: d}'.format(42)
+    number = 42
 
-    assert old_result == new_result
-    assert old_result == ' 42'  # output
+    percent_result = '% d' % number
+    format_result = '{: d}'.format(number)
+    fstring_result = f'{number: d}'
+
+    assert percent_result == format_result == fstring_result == ' 42'  # output
 
 
 def test_number_sign_4():
     """
-    New style formatting is also able to control the position of the sign
-    symbol relative to the padding.
+    `.format()` and f-strings are also able to control the position of the
+    sign symbol relative to the padding.
     """
+    number = -23
 
-    new_result = '{:=5d}'.format(-23)
+    format_result = '{:=5d}'.format(number)
+    fstring_result = f'{number:=5d}'
 
-    assert new_result == '-  23'  # output
+    assert format_result == fstring_result == '-  23'  # output
 
 
 def test_number_sign_5():
-    new_result = '{:=+5d}'.format(23)
+    number = 23
 
-    assert new_result == '+  23'  # output
+    format_result = '{:=+5d}'.format(number)
+    fstring_result = f'{number:=+5d}'
+
+    assert format_result == fstring_result == '+  23'  # output
+
+
+def test_number_sign_6():
+    """
+    Rounding a small negative number can lead to a confusing negative zero:
+    """
+    number = -0.001
+
+    percent_result = '%.2f' % number
+    format_result = '{:.2f}'.format(number)
+    fstring_result = f'{number:.2f}'
+
+    assert percent_result == format_result == fstring_result == '-0.00'  # output
+
+
+@since(3, 11)
+def test_number_sign_7():
+    """
+    The `z` option turns negative zero into a regular zero:
+    """
+    number = -0.001
+
+    format_result = '{:z.2f}'.format(number)
+    fstring_result = f'{number:z.2f}'
+
+    assert format_result == fstring_result == '0.00'  # output
+
+
+def test_number_grouping():
+    """
+    # Grouping digits
+
+    Long numbers are easier to read with a thousands separator. Use `,` or
+    `_` to group the digits:
+    """
+    number = 1234567
+
+    format_result = '{:,}'.format(number)
+    fstring_result = f'{number:,}'
+
+    assert format_result == fstring_result == '1,234,567'  # output
+
+
+def test_number_grouping_2():
+    number = 1234567
+
+    format_result = '{:_}'.format(number)
+    fstring_result = f'{number:_}'
+
+    assert format_result == fstring_result == '1_234_567'  # output
+
+
+def test_number_grouping_3():
+    """
+    Grouping can be combined with all other options, e.g. a precision:
+    """
+    number = 1234567.891
+
+    format_result = '{:,.2f}'.format(number)
+    fstring_result = f'{number:,.2f}'
+
+    assert format_result == fstring_result == '1,234,567.89'  # output
+
+
+def test_number_grouping_4():
+    """
+    For binary, octal and hexadecimal numbers `_` groups four digits:
+    """
+    number = 0xDEADBEEF
+
+    format_result = '{:_x}'.format(number)
+    fstring_result = f'{number:_x}'
+
+    assert format_result == fstring_result == 'dead_beef'  # output
+
+
+@since(3, 14)
+def test_number_grouping_5():
+    """
+    The digits after the decimal point can be grouped too:
+    """
+    number = 1234567.891011
+
+    format_result = '{:_.6_f}'.format(number)
+    fstring_result = f'{number:_.6_f}'
+
+    assert format_result == fstring_result == '1_234_567.891_011'  # output
 
 
 def test_named_placeholders():
     """
     # Named placeholders
 
-    Both formatting styles support named placeholders.
+    %-formatting and `.format()` both support named placeholders. f-strings
+    don't need them: you write the names (or any other expression) directly
+    into the string.
     """
-    data = {
-        'first': 'Hodor',
-        'last': 'Hodor!',
-    }
+    data = {'first': 'Hodor', 'last': 'Hodor!'}
 
-    old_result = '%(first)s %(last)s' % data
-    new_result = '{first} {last}'.format(**data)
+    percent_result = '%(first)s %(last)s' % data
+    format_result = '{first} {last}'.format(**data)
+    fstring_result = f"{data['first']} {data['last']}"
 
-    assert old_result == new_result
-    assert old_result == 'Hodor Hodor!'  # output
+    assert percent_result == format_result == fstring_result == 'Hodor Hodor!'  # output
 
 
 def test_named_placeholders_2():
     """
     `.format()` also accepts keyword arguments.
     """
+    first, last = 'Hodor', 'Hodor!'
 
-    new_result = '{first} {last}'.format(first="Hodor", last="Hodor!")
+    format_result = '{first} {last}'.format(first=first, last=last)
+    fstring_result = f'{first} {last}'
 
-    assert new_result == 'Hodor Hodor!'  # output
+    assert format_result == fstring_result == 'Hodor Hodor!'  # output
 
 
 def test_getitem_and_getattr():
     """
     # Getitem and Getattr
 
-    New style formatting allows even greater flexibility in accessing nested
-    data structures.
+    `.format()` and f-strings allow even greater flexibility in accessing
+    nested data structures.
 
-    It supports accessing containers that support `__getitem__` like for
-    example dictionaries and lists:
-
+    They support accessing containers that support `__getitem__` like for
+    example dictionaries and lists. Note the difference: `.format()` has its
+    own syntax where dictionary keys are written without quotes, while inside
+    an f-string you write regular Python, so the keys need quotes:
     """
-    person = {
-        'first': 'Jean-Luc',
-        'last': 'Picard',
-    }
+    person = {'first': 'Jean-Luc', 'last': 'Picard'}
 
-    new_result = '{p[first]} {p[last]}'.format(p=person)
+    format_result = '{p[first]} {p[last]}'.format(p=person)
+    fstring_result = f"{person['first']} {person['last']}"
 
-    assert new_result == 'Jean-Luc Picard'  # output
+    assert format_result == fstring_result == 'Jean-Luc Picard'  # output
 
 
 def test_getitem_and_getattr_2():
     data = [4, 8, 15, 16, 23, 42]
 
-    new_result = '{d[4]} {d[5]}'.format(d=data)
+    format_result = '{d[4]} {d[5]}'.format(d=data)
+    fstring_result = f'{data[4]} {data[5]}'
 
-    assert new_result == '23 42'  # output
+    assert format_result == fstring_result == '23 42'  # output
 
 
 def test_getitem_and_getattr_3():
     """
     As well as accessing attributes on objects via `getattr()`:
     """
+    class Plant:
+        type = 'tree'
 
-    class Plant(object):
-        type = "tree"
+    plant = Plant()
 
-    new_result = '{p.type}'.format(p=Plant())
+    format_result = '{p.type}'.format(p=plant)
+    fstring_result = f'{plant.type}'
 
-    assert new_result == 'tree'  # output
+    assert format_result == fstring_result == 'tree'  # output
 
 
 def test_getitem_and_getattr_4():
     """
     Both type of access can be freely mixed and arbitrarily nested:
     """
+    class Plant:
+        type = 'tree'
+        kinds = [{'name': 'oak'}, {'name': 'maple'}]
 
-    class Plant(object):
-        type = "tree"
-        kinds = [{
-            'name': "oak",
-        }, {
-            'name': "maple"
-        }]
+    plant = Plant()
 
-    new_result = '{p.type}: {p.kinds[0][name]}'.format(p=Plant())
+    format_result = '{p.type}: {p.kinds[0][name]}'.format(p=plant)
+    fstring_result = f"{plant.type}: {plant.kinds[0]['name']}"
 
-    assert new_result == 'tree: oak'  # output
+    assert format_result == fstring_result == 'tree: oak'  # output
+
+
+def test_expressions():
+    """
+    # Expressions
+
+    f-strings can contain any Python expression, for example arithmetic:
+    """
+    a, b = 3, 4
+
+    fstring_result = f'{a} + {b} = {a + b}'
+
+    assert fstring_result == '3 + 4 = 7'  # output
+
+
+def test_expressions_2():
+    """
+    Or method and function calls:
+    """
+    name = 'jean-luc picard'
+
+    fstring_result = f'{name.title()} has {len(name)} letters'
+
+    assert fstring_result == 'Jean-Luc Picard has 15 letters'  # output
+
+
+@since(3, 8)
+def test_debug():
+    """
+    # Self-documenting expressions
+
+    Add an `=` after the expression to output both the expression and its
+    value. This is very handy for debugging. By default the value is shown
+    using `repr(...)`:
+    """
+    user = 'eric_idle'
+
+    fstring_result = f'{user=}'
+
+    assert fstring_result == "user='eric_idle'"  # output
+
+
+@since(3, 8)
+def test_debug_2():
+    """
+    Whitespace around the `=` is kept in the output:
+    """
+    user = 'eric_idle'
+
+    fstring_result = f'{user = }'
+
+    assert fstring_result == "user = 'eric_idle'"  # output
+
+
+@since(3, 8)
+def test_debug_3():
+    """
+    Any expression works:
+    """
+    a, b = 3, 4
+
+    fstring_result = f'{a + b = }'
+
+    assert fstring_result == 'a + b = 7'  # output
+
+
+@since(3, 8)
+def test_debug_4():
+    """
+    A format spec is applied to the value, which then isn't shown using
+    `repr(...)` anymore:
+    """
+    pi = 3.141592653589793
+
+    fstring_result = f'{pi=:.2f}'
+
+    assert fstring_result == 'pi=3.14'  # output
+
+
+@since(3, 8)
+def test_debug_5():
+    """
+    Conversion flags work as well:
+    """
+    user = 'eric_idle'
+
+    fstring_result = f'{user=!s}'
+
+    assert fstring_result == 'user=eric_idle'  # output
 
 
 def test_datetime():
     """
     # Datetime
 
-    New style formatting also allows objects to control their own
-    rendering. This for example allows datetime objects to be formatted inline:
+    `.format()` and f-strings also allow objects to control their own
+    rendering. This for example allows datetime objects to be formatted
+    inline:
     """
-
     from datetime import datetime
+    dt = datetime(2001, 2, 3, 4, 5)
 
-    new_result = '{:%Y-%m-%d %H:%M}'.format(datetime(2001, 2, 3, 4, 5))
+    format_result = '{:%Y-%m-%d %H:%M}'.format(dt)
+    fstring_result = f'{dt:%Y-%m-%d %H:%M}'
 
-    assert new_result == '2001-02-03 04:05'  # output
+    assert format_result == fstring_result == '2001-02-03 04:05'  # output
 
 
 def test_param_align():
     """
     # Parametrized formats
 
-    Additionally, new style formatting allows all of the components of
-    the format to be specified dynamically using parametrization. Parametrized
-    formats are nested expressions in braces that can appear anywhere in the
-    parent format after the colon.
+    Additionally, `.format()` and f-strings allow all of the components of
+    the format to be specified dynamically using parametrization.
+    Parametrized formats are nested expressions in braces that can appear
+    anywhere in the parent format after the colon.
 
-    Old style formatting also supports some parametrization but is much more
+    %-formatting also supports some parametrization but is much more
     limited. Namely it only allows parametrization of the width and precision
     of the output.
 
     Parametrized alignment and width:
     """
+    text = 'test'
+    align, width = '^', 10
 
-    new_result = '{:{align}{width}}'.format('test', align='^', width='10')
+    format_result = '{:{align}{width}}'.format(text, align=align, width=width)
+    fstring_result = f'{text:{align}{width}}'
 
-    assert new_result == '   test   '  # output
+    assert format_result == fstring_result == '   test   '  # output
 
 
 def test_param_prec():
     """
     Parametrized precision:
     """
+    text, number, prec = 'Gibberish', 2.7182, 3
 
-    old_result = '%.*s = %.*f' % (3, 'Gibberish', 3, 2.7182)
-    new_result = '{:.{prec}} = {:.{prec}f}'.format('Gibberish', 2.7182, prec=3)
+    percent_result = '%.*s = %.*f' % (prec, text, prec, number)
+    format_result = '{:.{prec}} = {:.{prec}f}'.format(text, number, prec=prec)
+    fstring_result = f'{text:.{prec}} = {number:.{prec}f}'
 
-    assert old_result == new_result
-    assert new_result == 'Gib = 2.718'  # output
+    assert percent_result == format_result == fstring_result == 'Gib = 2.718'  # output
 
 
 def test_param_width_prec():
     """
     Width and precision:
     """
+    number, width, prec = 2.7182, 5, 2
 
-    old_result = '%*.*f' % (5, 2, 2.7182,)
-    new_result = '{:{width}.{prec}f}'.format(2.7182, width=5, prec=2)
+    percent_result = '%*.*f' % (width, prec, number)
+    format_result = '{:{width}.{prec}f}'.format(number, width=width, prec=prec)
+    fstring_result = f'{number:{width}.{prec}f}'
 
-    assert old_result == new_result
-    assert new_result == " 2.72"
+    assert percent_result == format_result == fstring_result == ' 2.72'  # output
 
 
 def test_param_prec_2():
@@ -465,44 +706,49 @@ def test_param_prec_2():
     The nested format can be used to replace *any* part of the format
     spec, so the precision example above could be rewritten as:
     """
+    text, number, prec = 'Gibberish', 2.7182, '.3'
 
-    new_result = '{:{prec}} = {:{prec}}'.format('Gibberish', 2.7182, prec='.3')
+    format_result = '{:{prec}} = {:{prec}}'.format(text, number, prec=prec)
+    fstring_result = f'{text:{prec}} = {number:{prec}}'
 
-    assert new_result == 'Gib = 2.72'  # output
+    assert format_result == fstring_result == 'Gib = 2.72'  # output
 
 
 def test_param_date():
     """
     The components of a date-time can be set separately:
     """
-
     from datetime import datetime
     dt = datetime(2001, 2, 3, 4, 5)
+    dfmt, tfmt = '%Y-%m-%d', '%H:%M'
 
-    new_result = '{:{dfmt} {tfmt}}'.format(dt, dfmt='%Y-%m-%d', tfmt='%H:%M')
+    format_result = '{:{dfmt} {tfmt}}'.format(dt, dfmt=dfmt, tfmt=tfmt)
+    fstring_result = f'{dt:{dfmt} {tfmt}}'
 
-    assert new_result == '2001-02-03 04:05'  # output
+    assert format_result == fstring_result == '2001-02-03 04:05'  # output
 
 
 def test_param_order_1():
     """
-    The nested formats can be positional arguments. Position depends
-    on the order of the opening curly braces:
+    With `.format()` the nested formats can be positional arguments. Position
+    depends on the order of the opening curly braces:
     """
+    number = 2.7182818284
 
-    new_result = '{:{}{}{}.{}}'.format(2.7182818284, '>', '+', 10, 3)
+    format_result = '{:{}{}{}.{}}'.format(number, '>', '+', 10, 3)
 
-    assert new_result == '     +2.72'  # output
+    assert format_result == '     +2.72'  # output
 
 
 def test_param_order_2():
     """
     And of course keyword arguments can be added to the mix as before:
     """
+    number = 2.7182818284
 
-    new_result = '{:{}{sign}{}.{}}'.format(2.7182818284, '>', 10, 3, sign='+')
+    format_result = '{:{}{sign}{}.{}}'.format(number, '>', 10, 3, sign='+')
 
-    assert new_result == '     +2.72'  # output
+    assert format_result == '     +2.72'  # output
 
 
 def test_custom_1():
@@ -514,13 +760,15 @@ def test_custom_1():
     overriding this method. This gives you complete control over the format
     syntax used.
     """
-
-    class HAL9000(object):
+    class HAL9000:
         def __format__(self, format):
-            if format == "open-the-pod-bay-doors":
+            if format == 'open-the-pod-bay-doors':
                 return "I'm afraid I can't do that."
-            return "HAL 9000"
+            return 'HAL 9000'
 
-    new_result = '{:open-the-pod-bay-doors}'.format(HAL9000())
+    hal = HAL9000()
 
-    assert new_result == "I'm afraid I can't do that."  # output
+    format_result = '{:open-the-pod-bay-doors}'.format(hal)
+    fstring_result = f'{hal:open-the-pod-bay-doors}'
+
+    assert format_result == fstring_result == "I'm afraid I can't do that."  # output

@@ -1,5 +1,6 @@
-pyformat_site.egg-info
+*.egg-info
 .tox
+.venv
 *.css
 *.map
 index.html
@@ -7,3 +8,4 @@ index.html
 htmlcov
 assets/sass/_pygments.scss
 /tests/fixtures/css/sass/_pygments.scss
+__pycache__
