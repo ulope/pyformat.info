@@ -10,16 +10,18 @@
     {% endfor %}
 </section>
 {%- endmacro %}
+{% macro render_badge(example) -%}
+    {% if example.show_badge %}<span class="badge">{{ example.since_label }}</span>{% endif %}
+{%- endmacro %}
 {% macro render_example(example) -%}
     <section id="{{ example.name }}" {% if not example.title %}class="continuation"{% endif %}>
         {% if example.title %}
-            <h2>{{ example.title }}</h2>
+            <h2>{{ example.title }} {{ render_badge(example) }}</h2>
+        {% elif example.show_badge %}
+            <p class="since">{{ render_badge(example) }}</p>
         {% endif %}
         {% if example.details %}
             <div class="description">{{ example.details|markdown }}</div>
-            {% if not example.old %}
-                <p class="notice">This operation is not available with old-style formatting.</p>
-            {% endif %}
         {% endif %}
         {% if example.setup %}
         <div class="setup">
@@ -28,18 +30,19 @@
         </div>
         {% endif %}
         <div class="code">
-            {% if example.old %}
-                <div class="old">
-                    <h3>Old</h3>
-                    {{ example.old|highlight|safe }}
+            {% for flavor in flavors %}
+                {% if flavor.key in example.variants %}
+                <div class="variant" data-flavor="{{ flavor.key }}">
+                    <h3>{{ flavor.label }}</h3>
+                    {{ example.variants[flavor.key]|highlight|safe }}
                 </div>
-            {% endif %}
-            {% if example.new %}
-            <div class="new">
-                <h3>New</h3>
-                {{ example.new|highlight|safe }}
-            </div>
-            {% endif %}
+                {% elif flavor.selectable and example.has_selectable %}
+                <div class="variant not-possible" data-flavor="{{ flavor.key }}">
+                    <h3>{{ flavor.label }}</h3>
+                    <p>Not possible with {{ flavor.name }}</p>
+                </div>
+                {% endif %}
+            {% endfor %}
         </div>
         {% if example.output %}
         <div class="output">
@@ -51,7 +54,7 @@
 {%- endmacro %}
 <html lang="en">
     <head>
-        <title>PyFormat: Using % and .format() for great good!</title>
+        <title>PyFormat: Using %, .format() and f-strings for great good!</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta charset="utf-8">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.1.1/gh-fork-ribbon.min.css" />
@@ -68,24 +71,77 @@
         </div>
         <div id="page">
             <header>
-                <h1 id="logo"><b><i>Py</i>Format</b> Using <i>%</i> and <i>.format()</i> for great good!</h1>
+                <h1 id="logo"><b><i>Py</i>Format</b> Using <i>%</i>, <i>.format()</i> and <i>f-strings</i> for great good!</h1>
             </header>
             <div id="main">
+                <nav id="flavor-picker" aria-label="Formatting styles" hidden>
+                    <span>Show:</span>
+                    {% for flavor in flavors if flavor.selectable %}
+                    <button type="button" data-flavor-toggle="{{ flavor.key }}" aria-pressed="true">{{ flavor.label }}</button>
+                    {% endfor %}
+                </nav>
+                <script>
+                    (function () {
+                        var STORAGE_KEY = 'pyformat-hidden-flavors';
+                        var picker = document.getElementById('flavor-picker');
+                        var buttons = Array.prototype.slice.call(picker.querySelectorAll('button'));
+                        var keys = buttons.map(function (b) { return b.getAttribute('data-flavor-toggle'); });
+                        var hidden = [];
+                        try {
+                            hidden = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+                        } catch (e) {}
+                        hidden = hidden.filter(function (key) { return keys.indexOf(key) !== -1; });
+                        if (hidden.length >= keys.length) {
+                            hidden = [];
+                        }
+
+                        function apply() {
+                            buttons.forEach(function (button, i) {
+                                var off = hidden.indexOf(keys[i]) !== -1;
+                                button.setAttribute('aria-pressed', off ? 'false' : 'true');
+                                document.body.classList.toggle('hide-' + keys[i], off);
+                            });
+                        }
+
+                        buttons.forEach(function (button, i) {
+                            button.addEventListener('click', function () {
+                                var pos = hidden.indexOf(keys[i]);
+                                if (pos !== -1) {
+                                    hidden.splice(pos, 1);
+                                } else if (hidden.length < keys.length - 1) {
+                                    // Always keep at least one style visible.
+                                    hidden.push(keys[i]);
+                                }
+                                apply();
+                                try {
+                                    localStorage.setItem(STORAGE_KEY, JSON.stringify(hidden));
+                                } catch (e) {}
+                            });
+                        });
+
+                        apply();
+                        picker.hidden = false;
+                    })();
+                </script>
                 <section id="teaser">
                     <p>
                         Python has had awesome string formatters for many years but the documentation on them is far too theoretic and technical.
-                        With this site we try to show you the most common use-cases covered by the <a href="https://docs.python.org/2/library/stdtypes.html#string-formatting">old</a> and <a href="https://docs.python.org/3/library/string.html#string-formatting">new</a> style string formatting API with practical examples.
+                        With this site we try to show you the most common use-cases covered by
+                        <a href="https://docs.python.org/3/library/stdtypes.html#printf-style-string-formatting">%-formatting</a>,
+                        <a href="https://docs.python.org/3/library/string.html#format-string-syntax"><code>.format()</code></a>
+                        and <a href="https://docs.python.org/3/reference/lexical_analysis.html#f-strings">f-strings</a>
+                        with practical examples.
                     </p>
                     <p>
-                        All examples on this page work out of the box with with Python 2.7, 3.2, 3.3, 3.4, and 3.5 without requiring any additional libraries.
+                        <code>.format()</code> and f-strings share the same
+                        <a href="https://docs.python.org/3/library/string.html#format-specification-mini-language">format specification</a>:
+                        everything after the <code>:</code> works the same in both.
+                        Use the buttons at the top to choose which styles you want to see.
                     </p>
                     <p>
-                        Further details about these two formatting methods can be found in the official Python documentation:
+                        All examples are tested with Python 3.14 and don't require any additional libraries.
+                        f-strings need Python 3.6 or newer, features that need an even newer version are marked.
                     </p>
-                    <ul>
-                        <li><a href="https://docs.python.org/2/library/stdtypes.html#string-formatting">old style</a></li>
-                        <li><a href="https://docs.python.org/3/library/string.html#string-formatting">new style</a></li>
-                    </ul>
                     <p>If you want to contribute more examples, feel free to create a pull-request on <a href="https://github.com/ulope/pyformat.info">Github</a>!</p>
                 </section>
                 <section id="toc">
@@ -119,7 +175,7 @@
             </div>
             <footer>
                 <p>
-                    You might also like <a href="http://strftime.org/">Python strftime reference</a>
+                    You might also like <a href="https://strftime.org/">Python strftime reference</a>
                     by <a href="https://twitter.com/mccutchen">Will McCutchen</a>.
                 </p>
                 <p>

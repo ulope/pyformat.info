@@ -12,6 +12,12 @@ $radius: 8px;
 
 .highlight {
     background: transparent;
+
+    // Pygments doesn't know about some newer syntax (e.g. comments inside
+    // f-strings) and would draw a red box around it.
+    .err {
+        border: none;
+    }
 }
 
 html {
@@ -32,6 +38,7 @@ pre {
 
     i {
         display: inline-block;
+        white-space: pre;
         margin-right: 1px;
         padding: 0 4px;
         background: darken($grey, 10);
@@ -40,12 +47,14 @@ pre {
 
 section {
     margin-top: 50px;
+    // Keep anchor targets clear of the sticky style picker.
+    scroll-margin-top: 60px;
 }
 
 #details {
     section {
         &.continuation {
-            margin-top: 5px;
+            margin-top: 25px;
         }
         section {
             margin-left: 20px;
@@ -126,23 +135,114 @@ footer {
     margin-top: 20px;
 }
 
-.notice {
-    background: lighten($red, 40);
-    padding: 0.2rem 1rem;
-    color: $red;
-    margin-bottom: 10px;
-    border-radius: $radius;
-}
-
-.new, .old, .output {
+.setup, .variant, .output {
     display: flex;
     flex-direction: row;
+    align-items: baseline;
+    margin: 0.8rem 0;
     h3 {
-        min-width: 75px;
-        margin-right: 10px;
+        min-width: 85px;
+        margin: 0 10px 0 0;
     }
     pre {
+        margin: 0;
+    }
+    .highlight, pre {
         flex-grow: 1;
+        min-width: 0;
+    }
+    pre {
+        overflow-x: auto;
+    }
+}
+
+// Let long outputs wrap between the letter boxes.
+.output pre {
+    white-space: pre-wrap;
+}
+
+.setup h3 {
+    color: lighten($base, 30);
+}
+
+.variant.not-possible {
+    h3 {
+        color: lighten($base, 40);
+    }
+    p {
+        flex-grow: 1;
+        margin: 0;
+        padding: 0 10px;
+        font-size: 1.3rem;
+        font-style: italic;
+        color: lighten($base, 40);
+    }
+}
+
+.badge {
+    display: inline-block;
+    vertical-align: middle;
+    padding: 0 0.8rem;
+    border-radius: $radius;
+    background: $yellow;
+    color: $base;
+    font-size: 1.2rem;
+    line-height: 2rem;
+    font-weight: normal;
+}
+
+.since {
+    margin: 0;
+}
+
+#flavor-picker {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: 20px;
+    padding: 1rem 0;
+    background: #FFF;
+    box-shadow: 0 6px 6px -6px rgba(0, 0, 0, 0.2);
+
+    &[hidden] {
+        display: none;
+    }
+
+    span {
+        color: lighten($base, 30);
+    }
+
+    button {
+        font: inherit;
+        font-family: 'Source Code Pro', monospace;
+        font-weight: bold;
+        cursor: pointer;
+        padding: 0.3rem 1.2rem;
+        border: 2px solid $blue;
+        border-radius: $radius;
+        background: #FFF;
+        color: $blue;
+
+        &[aria-pressed="true"] {
+            background: $blue;
+            color: #FFF;
+        }
+
+        &:focus-visible {
+            outline: 3px solid $yellow;
+            outline-offset: 1px;
+        }
+    }
+}
+
+// The style picker toggles these classes on <body>.
+@each $flavor in percent, format, fstring {
+    .hide-#{$flavor} [data-flavor="#{$flavor}"] {
+        display: none;
     }
 }
 
@@ -163,8 +263,15 @@ footer {
         max-width: 100%;
     }
 
-    .new, .old, .output {
+    .setup, .variant, .output {
         display: block;
+        h3 {
+            margin-bottom: 0.4rem;
+        }
+    }
+
+    .variant.not-possible {
+        display: flex;
     }
 
     #details section {

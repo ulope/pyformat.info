@@ -1,13 +1,16 @@
 import ast
 import inspect
+import textwrap
 
 from pathlib import Path
 from shutil import rmtree
 
 import wrapt
-import pytest
-import sys
 
+import main
+from main import FLAVORS
+from main import Example
+from main import mark_badges
 from main import parse_docstring
 from main import parse_function
 from main import get_content
@@ -17,6 +20,10 @@ from main import generate_css
 
 def test_split_letters():
     assert split_letters('a bc') == '<i>a</i><i> </i><i>b</i><i>c</i>'
+
+
+def test_split_letters_escapes_html():
+    assert split_letters('<a') == '<i>&lt;</i><i>a</i>'
 
 
 def test_generate_css_creates_output_folder():
@@ -77,6 +84,12 @@ def test_parse_docstring_without_title():
     assert parse_docstring('not the title') == (None, 'not the title')
 
 
+def since(*version):
+    def decorator(func):
+        return func
+    return decorator
+
+
 def dummy_long():
     """
     # Title
@@ -86,42 +99,44 @@ def dummy_long():
 
     x = {'a': 1}
 
-    old_result = "%(a)s" % x
-    new_result = "{x.a}".format(x=x)
+    percent_result = "%(a)s" % x
+    format_result = "{x[a]}".format(x=x)
+    fstring_result = f"{x['a']}"
 
-    assert new_result == "1"
-    assert old_result == new_result
+    assert percent_result == format_result == fstring_result == "1"  # output
 
 
-@pytest.mark.xfail(sys.version_info >= (3, 5), reason="astunparse is currently broken on Python >= 3.5")
 def test_parse_function_complete():
-    example = parse_function(func_to_ast(dummy_long))
+    example = parse_function(*func_to_ast(dummy_long))
 
     assert example.name == 'dummy_long'
     assert example.title == "Title"
     assert example.details == "Blah"
     assert example.setup == "x = {'a': 1}"
-    assert example.old == "'%(a)s' % x"
-    assert example.new == "'{x.a}'.format(x=x)"
+    assert example.variants == {
+        'percent': '"%(a)s" % x',
+        'format': '"{x[a]}".format(x=x)',
+        'fstring': 'f"{x[\'a\']}"',
+    }
+    assert list(example.variants) == ['percent', 'format', 'fstring']
     assert example.output == "1"
+    assert example.since is None
 
 
 def dummy_minimal():
-    new_result = "{}".format(1)
+    format_result = "{}".format(1)
 
-    assert new_result == "1"  # output
+    assert format_result == "1"  # output
 
 
-@pytest.mark.xfail(sys.version_info >= (3, 5), reason="astunparse is currently broken on Python >= 3.5")
 def test_parse_function_minimal():
-    example = parse_function(func_to_ast(dummy_minimal))
+    example = parse_function(*func_to_ast(dummy_minimal))
 
     assert example.name == 'dummy_minimal'
     assert example.title is None
     assert example.details is None
     assert example.setup == ""
-    assert example.old == ""
-    assert example.new == "'{}'.format(1)"
+    assert example.variants == {'format': '"{}".format(1)'}
     assert example.output == "1"
 
 
@@ -130,15 +145,72 @@ def dummy_empty():
 
 
 def test_parse_function_empty():
-    example = parse_function(func_to_ast(dummy_empty))
+    example = parse_function(*func_to_ast(dummy_empty))
 
     assert example.name == 'dummy_empty'
     assert example.title is None
     assert example.details is None
     assert example.setup == "pass"
-    assert example.old == ""
-    assert example.new == ""
+    assert example.variants == {}
     assert example.output == ""
+
+
+def dummy_variant_order():
+    a = 1
+
+    fstring_result = f'{a}'
+    percent_result = '%s' % a
+
+    assert fstring_result == percent_result == '1'
+
+
+def test_parse_function_orders_variants_like_flavors():
+    example = parse_function(*func_to_ast(dummy_variant_order))
+    assert list(example.variants) == ['percent', 'fstring']
+
+
+@since(3, 8)
+def dummy_debug():
+    user = 'eric'  # a user
+
+    # the f-string
+    fstring_result = f'{user = }'
+
+    assert fstring_result == "user = 'eric'"  # output
+
+
+def test_parse_function_keeps_source_verbatim():
+    """
+    ``ast.unparse`` would turn ``f'{user = }'`` into ``f'user = {user!r}'``,
+    so the code has to be taken from the source as written.
+    """
+    example = parse_function(*func_to_ast(dummy_debug))
+
+    assert example.setup == "user = 'eric'  # a user"
+    assert example.variants == {'fstring': "f'{user = }'"}
+    assert example.output == "user = 'eric'"
+    assert example.since == (3, 8)
+    assert example.since_label == "Python 3.8+"
+
+
+def dummy_multiline():
+    a = 1
+    b = 2
+
+    fstring_result = f'{
+        a + b  # sum
+    }'
+
+    assert fstring_result == '3'  # output
+
+
+def test_parse_function_multiline():
+    example = parse_function(*func_to_ast(dummy_multiline))
+
+    assert example.setup == "a = 1\nb = 2"
+    assert example.variants == {
+        'fstring': "f'{\n    a + b  # sum\n}'",
+    }
 
 
 @wrapt.decorator
@@ -152,9 +224,21 @@ def dummy_decorated():
 
 
 def test_parse_decorated():
-    example = parse_function(func_to_ast(dummy_decorated))
+    example = parse_function(*func_to_ast(dummy_decorated))
     assert example.name == 'dummy_decorated'
     assert example.setup == 'pass'
+
+
+def test_mark_badges():
+    examples = mark_badges([
+        Example('a', title='A', since=(3, 8)),
+        Example('b', since=(3, 8)),
+        Example('c', since=(3, 12)),
+        Example('d', title='D'),
+        Example('e', since=(3, 11)),
+        Example('f', title='F', since=(3, 11)),
+    ])
+    assert [e.show_badge for e in examples] == [True, False, True, False, True, True]
 
 
 def test_get_content_for_cls(tmpdir):
@@ -174,18 +258,18 @@ class TestSomethingElse():
     assert len(result) == 1
     section = result[0]
     assert section.title == "Title"
+    assert section.details == "Description"
     assert section.name == "SomethingElse"
     assert len(section.examples) == 1
     assert section.examples[0].name == "SomethingElse__se"
 
 
-@pytest.mark.xfail(sys.version_info >= (3, 5), reason="astunparse is currently broken on Python >= 3.5")
 def test_get_content(tmpdir):
     testfile = tmpdir.join('test_content.py')
     testfile.write('''
 def test_something():
-    new_result = '{}'.format('hello')
-    assert new_result == 'hello'
+    format_result = '{}'.format('hello')
+    assert format_result == 'hello'
 
 class TestSomethingElse():
     def test_se(self):
@@ -199,5 +283,58 @@ def unknown():
     assert len(result) == 2
 
 
+def test_render_html(monkeypatch):
+    monkeypatch.setattr(main, 'generate_css', lambda *args: {'style.scss': 'style.css'})
+    examples = mark_badges([
+        Example('both', title='Both', setup='x = 1',
+                variants={'percent': "'%s' % x", 'fstring': "f'{x}'"},
+                output='1', since=(3, 11)),
+        Example('template', title='Template',
+                variants={'tstring': "t'{x}'"}, output='<x>'),
+    ])
+    html = main.render_html(examples)
+
+    assert 'data-flavor-toggle="percent"' in html
+    assert 'data-flavor-toggle="tstring"' not in html
+    assert '<span class="badge">Python 3.11+</span>' in html
+    # Missing selectable variants get a placeholder ...
+    assert 'Not possible with .format()' in html
+    # ... but only for examples that have at least one selectable variant.
+    assert 'Not possible with f-strings' not in html
+    assert html.count('class="variant not-possible"') == 1
+    assert '<i>&lt;</i><i>x</i><i>&gt;</i>' in html
+
+
+def test_every_result_is_asserted():
+    """
+    Every code snippet shown on the page must be checked by an assert in its
+    example, otherwise its output isn't verified.
+    """
+    content = Path(__file__).parent / 'test_content.py'
+    module = ast.parse(content.read_text(encoding='utf-8'))
+    result_names = {flavor.variable for flavor in FLAVORS}
+    checked = 0
+    for node in module.body:
+        if not (isinstance(node, ast.FunctionDef) and node.name.startswith('test_')):
+            continue
+        assigned = {
+            target.id
+            for n in node.body if isinstance(n, ast.Assign)
+            for target in n.targets
+            if isinstance(target, ast.Name) and target.id in result_names
+        }
+        asserted = {
+            name.id
+            for n in node.body if isinstance(n, ast.Assert)
+            for name in ast.walk(n.test) if isinstance(name, ast.Name)
+        }
+        assert assigned, '{} shows no code'.format(node.name)
+        assert assigned <= asserted, '{} doesn\'t assert {}'.format(
+            node.name, ', '.join(sorted(assigned - asserted)))
+        checked += 1
+    assert checked > 50
+
+
 def func_to_ast(func):
-    return ast.parse(inspect.getsource(func)).body[0]
+    source = textwrap.dedent(inspect.getsource(func))
+    return ast.parse(source).body[0], source

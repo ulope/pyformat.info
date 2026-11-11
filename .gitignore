@@ -7,3 +7,4 @@ index.html
 htmlcov
 assets/sass/_pygments.scss
 /tests/fixtures/css/sass/_pygments.scss
+__pycache__
