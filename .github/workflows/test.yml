@@ -6,12 +6,27 @@ on:
 
 jobs:
   test:
+    name: Test on Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # All Python versions that are currently supported upstream.
+        python-version: ["3.11", "3.12", "3.13", "3.14", "3.15"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: uv sync --locked
+      - run: uv run pytest
+
+  build:
+    name: Build the site
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.14"
-      - run: pip install -e .
-      - run: pytest tests
-      - run: pyformat generate
+      # Uses the Python version from .python-version.
+      - uses: astral-sh/setup-uv@v7
+      - run: uv sync --locked
+      - run: uv run pyformat generate

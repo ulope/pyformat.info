@@ -3,8 +3,10 @@ import dataclasses
 import datetime
 import hashlib
 import logging
+import re
 import subprocess
 import sys
+import tomllib
 from logging import getLogger
 from collections import namedtuple
 from pathlib import Path
@@ -22,7 +24,14 @@ import pygments.lexers
 
 log = getLogger(__name__)
 
-CONTENT_MODULE_PATH = Path("tests/test_content.py")
+#: Where the examples live. ``test_content.py`` must work on every supported
+#: Python version, examples that need newer syntax live in
+#: ``test_content_py3NN.py`` modules which need Python 3.NN.
+CONTENT_DIR = Path("tests")
+VERSIONED_MODULE_RE = re.compile(r"test_content_py3(\d+)\.py")
+
+#: The order of the sections on the page.
+TOC_PATH = Path("toc.toml")
 
 Flavor = namedtuple('Flavor', ('key', 'variable', 'label', 'name', 'selectable'))
 
@@ -41,6 +50,14 @@ FLAVOR_BY_VARIABLE = {flavor.variable: flavor for flavor in FLAVORS}
 Section = namedtuple('Section', ('name', 'title', 'details', 'examples'))
 
 Version = namedtuple('Version', ('revid', 'datetime'))
+
+
+class ContentError(click.ClickException):
+    """The content modules and ``toc.toml`` don't fit together."""
+
+
+def format_version(version):
+    return ".".join(str(part) for part in version)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -65,7 +82,7 @@ class Example:
     def since_label(self):
         if not self.since:
             return ""
-        return "Python {}+".format(".".join(str(part) for part in self.since))
+        return "Python {}+".format(format_version(self.since))
 
     def _replace(self, **changes):
         return dataclasses.replace(self, **changes)
@@ -207,7 +224,7 @@ def result_flavor(node):
     return None
 
 
-def parse_function(node, source):
+def parse_function(node, source, since=None):
     variants = {}
     output = None
     setup = []
@@ -238,11 +255,11 @@ def parse_function(node, source):
         setup=source_of_statements(source, setup) if setup else "",
         variants={f.key: variants[f.key] for f in FLAVORS if f.key in variants},
         output=output or "",
-        since=parse_since(node),
+        since=parse_since(node) or since,
     )
 
 
-def parse_class(node, source):
+def parse_class(node, source, since=None):
     """
     parse_class parses the given node representing a test class for example
     test cases and puts everything into a Section object.
@@ -253,7 +270,7 @@ def parse_class(node, source):
 
     for n in node.body:
         if isinstance(n, ast.FunctionDef) and n.name.startswith('test_'):
-            example = parse_function(n, source)
+            example = parse_function(n, source, since)
             examples.append(example._replace(
                 name='{}__{}'.format(name, example.name)))
 
@@ -282,23 +299,128 @@ def mark_badges(items):
     return result
 
 
-def get_content(filename=None):
+def content_modules(folder=CONTENT_DIR):
     """
-    get_content generates sections or examples out of the given file path.
+    Return ``(path, min_version)`` for every content module. ``min_version``
+    is ``None`` for ``test_content.py`` and e.g. ``(3, 12)`` for
+    ``test_content_py312.py``.
     """
-    log.info("Parsing content.")
-    if filename is None:
-        filename = CONTENT_MODULE_PATH
+    modules = [(folder / 'test_content.py', None)]
+    for path in sorted(folder.glob('test_content_py3*.py')):
+        match = VERSIONED_MODULE_RE.fullmatch(path.name)
+        if match:
+            modules.append((path, (3, int(match.group(1)))))
+    return modules
+
+
+def required_python(folder=CONTENT_DIR):
+    """
+    Return the Python version needed to parse all content modules, or
+    ``None`` if every supported version can.
+    """
+    return max((v for _, v in content_modules(folder) if v), default=None)
+
+
+def parse_module(filename, since=None):
+    """
+    Parse a content module into examples (and sections for test classes) in
+    the order they are defined. ``since`` is the default minimum Python
+    version for its examples.
+    """
     with open(str(filename), encoding='utf-8') as fp:
         source = fp.read()
     module = ast.parse(source)
     items = []
     for node in module.body:
         if isinstance(node, ast.FunctionDef) and node.name.startswith('test_'):
-            items.append(parse_function(node, source))
+            items.append(parse_function(node, source, since))
         if isinstance(node, ast.ClassDef) and node.name.startswith('Test'):
-            items.append(parse_class(node, source))
-    return mark_badges(items)
+            items.append(parse_class(node, source, since))
+    return items
+
+
+def group_sections(items, origin):
+    """
+    Split the items of one module into sections: a titled example (or a
+    test class) followed by the untitled examples that continue it. Returns
+    a dict mapping the section id (the name of its first item) to its items.
+    """
+    sections = {}
+    current = None
+    for item in items:
+        if isinstance(item, Section) or item.title:
+            current = sections.setdefault(item.name, [])
+        elif current is None:
+            raise ContentError(
+                "{}: example '{}' has no title, so it doesn't belong to a "
+                "section. Give it a '# Title' or move it after the example "
+                "it continues.".format(origin, item.name))
+        current.append(item)
+    return sections
+
+
+def read_toc(path=TOC_PATH):
+    with open(str(path), 'rb') as fp:
+        return tomllib.load(fp)['sections']
+
+
+def get_content(filename=None, folder=CONTENT_DIR, toc=TOC_PATH):
+    """
+    get_content parses the examples and returns them in page order.
+
+    Without ``filename`` all content modules in ``folder`` are read and their
+    sections are ordered as listed in ``toc``. With ``filename`` only that
+    module is read and the examples keep their definition order.
+    """
+    log.info("Parsing content.")
+    if filename is not None:
+        return mark_badges(parse_module(filename))
+
+    sections = {}
+    for path, version in content_modules(folder):
+        for name, items in group_sections(parse_module(path, version), path).items():
+            if name in sections:
+                raise ContentError(
+                    "Section '{}' is defined more than once.".format(name))
+            sections[name] = items
+
+    order = read_toc(toc)
+    problems = []
+    for name in sorted({name for name in order if order.count(name) > 1}):
+        problems.append("'{}' is listed more than once".format(name))
+    for name in order:
+        if name not in sections:
+            problems.append("'{}' is listed but doesn't exist".format(name))
+    for name in sections:
+        if name not in order:
+            problems.append("'{}' exists but isn't listed".format(name))
+    if problems:
+        raise ContentError("{} doesn't match the content: {}.".format(
+            toc, "; ".join(problems)))
+
+    return mark_badges([item for name in order for item in sections[name]])
+
+
+def check_python_version():
+    """
+    Parsing all examples needs a Python version that knows all the syntax
+    they use, see ``content_modules()``.
+    """
+    required = required_python()
+    if required and sys.version_info < required:
+        raise click.ClickException(
+            "Generating the site needs Python {}+ because some examples use "
+            "syntax older versions can't parse. This is Python {}.".format(
+                format_version(required),
+                format_version(sys.version_info[:3])))
+
+
+def _requirement_help():
+    required = required_python()
+    if not required:
+        return ""
+    return " Needs Python {}+ to parse all examples.".format(
+        format_version(required))
 
 
 @click.group()
@@ -306,18 +428,20 @@ def main():
     logging.basicConfig(stream=sys.stderr, level=logging.DEBUG, format="%(levelname)-7s %(name)s: %(message)s")
 
 
-@main.command()
+@main.command(help="Generate the website." + _requirement_help())
 @click.option('-o', '--output', default='index.html',
               help="Path to the output HTML file")
 def generate(output):
+    check_python_version()
     generate_html(get_content(), Path(output))
     log.info("Done.")
 
 
-@main.command()
+@main.command(help="List the parsed examples." + _requirement_help())
 @click.option('-v', '--verbose', is_flag=True,
               help="Print function definitions")
 def extract(verbose):
+    check_python_version()
     cnt = 0
     for example in get_content():
         cnt += 1

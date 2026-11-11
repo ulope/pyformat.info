@@ -1,5 +1,6 @@
-pyformat_site.egg-info
+*.egg-info
 .tox
+.venv
 *.css
 *.map
 index.html

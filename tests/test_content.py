@@ -634,49 +634,6 @@ def test_debug_5():
     assert fstring_result == 'user=eric_idle'  # output
 
 
-@since(3, 12)
-def test_fstring_syntax():
-    """
-    # Quotes, backslashes and comments
-
-    Since Python 3.12 the expressions inside an f-string follow the same rules
-    as any other Python code.
-
-    You can use the same kind of quotes as the f-string itself:
-    """
-    person = {'first': 'Jean-Luc', 'last': 'Picard'}
-
-    fstring_result = f'{person['first']} {person['last']}'
-
-    assert fstring_result == 'Jean-Luc Picard'  # output
-
-
-@since(3, 12)
-def test_fstring_syntax_2():
-    """
-    Backslashes are allowed:
-    """
-    parts = ['C:', 'Users', 'eric']
-
-    fstring_result = f'{'\\'.join(parts)}'
-
-    assert fstring_result == 'C:\\Users\\eric'  # output
-
-
-@since(3, 12)
-def test_fstring_syntax_3():
-    """
-    And expressions can span multiple lines and contain comments:
-    """
-    price, quantity = 4.5, 3
-
-    fstring_result = f'{
-        price * quantity  # the total price
-    :.2f} EUR'
-
-    assert fstring_result == '13.50 EUR'  # output
-
-
 def test_datetime():
     """
     # Datetime
@@ -815,58 +772,3 @@ def test_custom_1():
     fstring_result = f'{hal:open-the-pod-bay-doors}'
 
     assert format_result == fstring_result == "I'm afraid I can't do that."  # output
-
-
-@since(3, 14)
-def test_tstring():
-    """
-    # Template strings
-
-    t-strings look like f-strings, but they don't produce a `str`. Instead
-    they create a [`Template`][1] object that keeps the literal text and the
-    interpolated values apart. The code receiving the template decides how to
-    combine them, for example to escape HTML, build safe SQL queries or
-    produce structured logs.
-
-    Iterating over a template yields its strings and [`Interpolation`][2]
-    objects, which carry the value:
-
-    [1]: https://docs.python.org/3/library/string.templatelib.html
-    [2]: https://docs.python.org/3/library/string.templatelib.html#string.templatelib.Interpolation
-    """
-    from html import escape
-    from string.templatelib import Interpolation
-
-    def safe_html(template):
-        result = ''
-        for part in template:
-            if isinstance(part, Interpolation):
-                part = escape(str(part.value))
-            result += part
-        return result
-
-    user = '<script>'
-
-    tstring_result = safe_html(t'<p>Hello {user}!</p>')
-
-    assert tstring_result == '<p>Hello &lt;script&gt;!</p>'  # output
-
-
-@since(3, 14)
-def test_tstring_2():
-    """
-    Each interpolation also remembers the expression it came from:
-    """
-    import json
-
-    def to_json(template):
-        data = {}
-        for interpolation in template.interpolations:
-            data[interpolation.expression] = interpolation.value
-        return json.dumps(data)
-
-    user, action = 'eric', 'login'
-
-    tstring_result = to_json(t'{user} did {action}')
-
-    assert tstring_result == '{"user": "eric", "action": "login"}'  # output

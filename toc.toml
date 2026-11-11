@@ -1,0 +1,30 @@
+# The order of the sections on the page.
+#
+# Each entry is the id of a section: the name of the example function that
+# starts it (the one whose docstring has a "# Title"), without the "test_"
+# prefix. The id is also the section's anchor on the page, e.g. #debug.
+#
+# The examples themselves live in tests/test_content*.py, split only by the
+# Python version their syntax needs. Their position on the page is decided
+# here, so add a new section where it fits logically.
+
+sections = [
+    "simple",               # Basic formatting
+    "conversion_flags",     # Value conversion
+    "string_pad_align",     # Padding and aligning strings
+    "string_truncating",    # Truncating long strings
+    "string_trunc_pad",     # Combining truncating and padding
+    "number",               # Numbers
+    "number_padding",       # Padding numbers
+    "number_sign",          # Signed numbers
+    "number_grouping",      # Grouping digits
+    "named_placeholders",   # Named placeholders
+    "getitem_and_getattr",  # Getitem and Getattr
+    "expressions",          # Expressions
+    "debug",                # Self-documenting expressions
+    "fstring_syntax",       # Quotes, backslashes and comments
+    "datetime",             # Datetime
+    "param_align",          # Parametrized formats
+    "custom_1",             # Custom objects
+    "tstring",              # Template strings
+]
